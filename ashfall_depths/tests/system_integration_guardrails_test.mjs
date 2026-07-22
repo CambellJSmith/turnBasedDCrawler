@@ -28,7 +28,7 @@ assert.equal(
   "an object must not block the final alternate route after a chest blocks the first"
 );
 assert.equal(
-  dungeon_remains_connected_with_objects(two_route_dungeon, [...existing_blockers, { x: 2, y: 3 }]),
+  dungeon_remains_connected_with_objects(two_route_dungeon, [...existing_blockers, { x: 2, y: 2 }]),
   true,
   "non-critical room objects should remain valid"
 );
