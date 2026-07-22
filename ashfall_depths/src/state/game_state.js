@@ -1,3 +1,4 @@
+import { create_default_player_upgrade_ranks, normalize_player_upgrade_ranks } from "../data/player_upgrades.js";
 import { InventoryState } from "./inventory_state.js";
 import { PartyState } from "./party_state.js";
 
@@ -9,6 +10,10 @@ export class GameState {
     this.defeated_monsters = 0;
     this.player_level = 1;
     this.player_experience = 0;
+    this.progression_mode_version = 2;
+    this.legacy_completed_levels = 0;
+    this.pending_level_choices = 0;
+    this.player_upgrade_ranks = create_default_player_upgrade_ranks();
     this.unlocked_character_ids = ["hero"];
     this.inventory = new InventoryState();
     this.party = new PartyState();
@@ -27,6 +32,10 @@ export class GameState {
       defeated_monsters: this.defeated_monsters,
       player_level: this.player_level,
       player_experience: this.player_experience,
+      progression_mode_version: this.progression_mode_version,
+      legacy_completed_levels: this.legacy_completed_levels,
+      pending_level_choices: this.pending_level_choices,
+      player_upgrade_ranks: { ...this.player_upgrade_ranks },
       unlocked_character_ids: [...this.unlocked_character_ids],
       inventory: this.inventory.to_json(),
       party: this.party.to_json(),
@@ -44,6 +53,15 @@ export class GameState {
     this.defeated_monsters = Number(data.defeated_monsters) || 0;
     this.player_level = Math.max(1, Math.floor(Number(data.player_level) || 1));
     this.player_experience = Math.max(0, Math.floor(Number(data.player_experience) || 0));
+
+    const saved_progression_version = Math.max(1, Math.floor(Number(data.progression_mode_version) || 1));
+    this.progression_mode_version = 2;
+    this.legacy_completed_levels = saved_progression_version >= 2
+      ? Math.max(0, Math.floor(Number(data.legacy_completed_levels) || 0))
+      : Math.max(0, this.player_level - 1);
+    this.pending_level_choices = Math.max(0, Math.floor(Number(data.pending_level_choices) || 0));
+    this.player_upgrade_ranks = normalize_player_upgrade_ranks(data.player_upgrade_ranks);
+
     this.unlocked_character_ids = Array.isArray(data.unlocked_character_ids) ? [...data.unlocked_character_ids] : ["hero"];
     this.inventory.load(data.inventory);
     this.party.load(data.party);
