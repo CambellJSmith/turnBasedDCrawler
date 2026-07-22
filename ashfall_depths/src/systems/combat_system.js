@@ -1,3 +1,4 @@
+import { get_player_upgrade_rank } from "../data/player_upgrades.js";
 import { monster_database } from "../data/monsters.js";
 import { item_database } from "../data/items.js";
 import { distance_between } from "../utils/math.js";
@@ -76,7 +77,9 @@ export class CombatSystem {
       this.game.add_log(`${entity.name} falls · ${gold} gold`);
       this.game.player_progression_system?.award_for_monster(entity);
 
-      if (source?.type === "player" && this.game.dungeon.random.chance(0.01)) {
+      const recruitment_rank = get_player_upgrade_rank(this.game.state, "recruitment_chance");
+      const recruitment_chance = Math.min(0.35, 0.01 + recruitment_rank * 0.02);
+      if (source?.type === "player" && this.game.dungeon.random.chance(recruitment_chance)) {
         this.revive_as_recruitable(entity);
       } else {
         this.game.loot_system.roll_monster_drop(entity, data);
