@@ -17,17 +17,6 @@ export class LevelUpController {
         this.choose(button.dataset.upgradeId);
       }
     });
-
-    window.addEventListener("keydown", (event) => {
-      if (!this.is_open()) {
-        return;
-      }
-      const number = Number(event.key);
-      if (number >= 1 && number <= this.choices.length) {
-        event.preventDefault();
-        this.choose(this.choices[number - 1].id);
-      }
-    });
   }
 
   is_open() {
@@ -43,7 +32,9 @@ export class LevelUpController {
     if (this.choices.length === 0) {
       this.game.state.pending_level_choices = 0;
       this.hide();
-      this.game.paused = false;
+      if (this.game.player.alive && !this.game.game_over_controller?.is_open()) {
+        this.game.paused = false;
+      }
       return false;
     }
 
