@@ -51,7 +51,7 @@ game.start = () => {
   game.add_log("expedition started · uncover the map and locate the descent door");
   game.add_log("step onto treasure and dungeon objects, then interact with the tile beneath you");
   game.add_log("locked doors and cracked walls are solid · interact with them from beside the barrier");
-  game.add_log("enemies are optional · combat earns experience, supplies, gold, and possible allies");
+  game.add_log("protect your allies · any team member who dies is permanently lost");
   requestAnimationFrame(game.loop);
 };
 
