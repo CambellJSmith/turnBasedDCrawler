@@ -8,6 +8,8 @@ export class HudController {
     this.floor_text = document.querySelector("#floor_text");
     this.gold_text = document.querySelector("#gold_text");
     this.team_text = document.querySelector("#team_text");
+    this.level_text = document.querySelector("#level_text");
+    this.experience_text = document.querySelector("#experience_text");
     this.turn_text = document.querySelector("#turn_text");
     this.phase_text = document.querySelector("#phase_text");
     this.interaction_prompt = document.querySelector("#interaction_prompt");
@@ -22,6 +24,9 @@ export class HudController {
     this.floor_text.textContent = `floor ${this.game.state.floor}`;
     this.gold_text.textContent = `gold ${this.game.state.gold}`;
     this.team_text.textContent = `team ${this.game.state.party.member_ids.length}`;
+    this.level_text.textContent = `level ${this.game.state.player_level}`;
+    const required_experience = this.game.player_progression_system?.get_experience_requirement() ?? 0;
+    this.experience_text.textContent = `xp ${this.game.state.player_experience} / ${required_experience}`;
     this.turn_text.textContent = `turn ${this.game.state.turn_count}`;
     this.phase_text.textContent = this.get_phase_text();
 
