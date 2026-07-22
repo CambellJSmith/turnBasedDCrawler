@@ -22,7 +22,7 @@ export const dungeon_object_definitions = Object.freeze({
     name: "explosive barrel",
     minimum_floor: 2,
     weight: 7,
-    blocks_movement: true,
+    blocks_movement: false,
     blocks_vision: false,
     placement: "room_static"
   }),
@@ -31,7 +31,7 @@ export const dungeon_object_definitions = Object.freeze({
     name: "breakable urn",
     minimum_floor: 1,
     weight: 11,
-    blocks_movement: true,
+    blocks_movement: false,
     blocks_vision: false,
     placement: "room_static"
   }),
@@ -40,7 +40,7 @@ export const dungeon_object_definitions = Object.freeze({
     name: "healing fountain",
     minimum_floor: 1,
     weight: 4,
-    blocks_movement: true,
+    blocks_movement: false,
     blocks_vision: false,
     placement: "room_static"
   }),
@@ -49,7 +49,7 @@ export const dungeon_object_definitions = Object.freeze({
     name: "ancient lever",
     minimum_floor: 3,
     weight: 5,
-    blocks_movement: true,
+    blocks_movement: false,
     blocks_vision: false,
     placement: "room_static"
   }),
@@ -58,7 +58,7 @@ export const dungeon_object_definitions = Object.freeze({
     name: "locked iron door",
     minimum_floor: 3,
     weight: 5,
-    blocks_movement: true,
+    blocks_movement: false,
     blocks_vision: true,
     placement: "corridor"
   }),
