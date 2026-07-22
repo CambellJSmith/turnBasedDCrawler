@@ -1,5 +1,6 @@
 import "./world/lava_generation_patch.js";
 import "./systems/chest_gameplay_patch.js";
+import "./systems/chest_privacy_patch.js";
 import "./render/lava_render_patch.js";
 import "./render/chest_render_patch.js";
 import "./render/player_visibility_patch.js";
@@ -34,7 +35,7 @@ game.advance_floor = () => {
 
 game.start = () => {
   game.add_log("find the wall door whenever you want to descend");
-  game.add_log("treasure chests may be opened, stolen by monsters, and recovered from fallen carriers");
+  game.add_log("treasure chests may appear throughout the dungeon");
   game.add_log("lava is impassable, but every generated route remains fully connected");
   game.add_log("rooms use distinct layouts, architecture, and floor materials");
   requestAnimationFrame(game.loop);
