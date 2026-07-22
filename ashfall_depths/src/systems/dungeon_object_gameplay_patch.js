@@ -23,6 +23,10 @@ Game.prototype.is_tile_blocked = function is_tile_blocked_with_object_properties
 
 const original_interact = InteractionSystem.prototype.interact;
 InteractionSystem.prototype.interact = function interact_with_dungeon_objects() {
+  if (has_primary_interaction(this.game)) {
+    return original_interact.call(this);
+  }
+
   const object = this.game.dungeon_object_system?.get_adjacent_interactable();
   if (object && this.game.dungeon_object_system.interact(object)) {
     return { consumes_turn: true, skip_non_player_turns: false };
@@ -39,3 +43,22 @@ InteractionSystem.prototype.get_prompt = function get_prompt_with_dungeon_object
   const object = this.game.dungeon_object_system?.get_adjacent_interactable();
   return this.game.dungeon_object_system?.get_prompt(object) ?? "";
 };
+
+function has_primary_interaction(game) {
+  const player = game.player;
+  const ground_item_here = game.entities.some((entity) =>
+    entity.alive &&
+    entity.type === "ground_item" &&
+    entity.grid_x === player.grid_x &&
+    entity.grid_y === player.grid_y
+  );
+  if (ground_item_here || game.recruitment_system?.get_nearby_recruitable()) {
+    return true;
+  }
+
+  if (game.dungeon.grid.get_tile(player.grid_x, player.grid_y)?.terrain_id === "exit") {
+    return true;
+  }
+
+  return Boolean(game.chest_system?.get_adjacent_chest(player));
+}
