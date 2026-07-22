@@ -8,6 +8,7 @@ import { MovementSystem } from "../src/systems/movement_system.js";
 import { DungeonGrid } from "../src/world/dungeon_grid.js";
 import "../src/systems/environment_movement_patch.js";
 import "../src/systems/shared_tile_gameplay_patch.js";
+import "../src/systems/solid_barrier_gameplay_patch.js";
 
 const logs = [];
 const inventory = [];
@@ -41,8 +42,8 @@ assert.equal(movement.try_move(player, { x: 0, y: 1 }, 200), false, "walls must 
 
 const secret_wall = create_dungeon_object(dungeon_object_definitions.secret_wall, 3, 1, 8);
 game.entities.push(secret_wall);
-assert.equal(movement.try_move(player, { x: 0, y: -1 }, 300), true, "bumping a secret wall should reveal it");
-assert.deepEqual([player.grid_x, player.grid_y], [3, 2], "a secret wall remains a wall until opened");
+assert.equal(movement.try_move(player, { x: 0, y: -1 }, 300), true, "bumping a cracked wall should reveal it");
+assert.deepEqual([player.grid_x, player.grid_y], [3, 2], "a cracked wall remains solid until opened");
 assert.equal(secret_wall.revealed, true);
 
 const chest = create_treasure_chest(game.dungeon.random, 8, player.grid_x, player.grid_y);
@@ -78,11 +79,14 @@ player.grid_x = 1;
 player.grid_y = 4;
 player.display_x = 1;
 player.display_y = 4;
-assert.equal(movement.try_move(player, { x: 1, y: 0 }, 400), true, "a locked door is an interactable floor object");
-finish_move(player);
+assert.equal(movement.try_move(player, { x: 1, y: 0 }, 400), false, "a closed locked door must remain solid");
+assert.deepEqual([player.grid_x, player.grid_y], [1, 4]);
 assert.match(interaction.get_prompt(), /force open the locked door/);
 assert.deepEqual(interaction.interact(), { consumes_turn: true, skip_non_player_turns: false });
 assert.equal(locked_door.open, true);
+assert.equal(movement.try_move(player, { x: 1, y: 0 }, 500), true, "an opened door should become traversable");
+finish_move(player);
+assert.deepEqual([player.grid_x, player.grid_y], [2, 4]);
 
 const ai_grid = create_grid(6, 4);
 ai_grid.tiles[1][2].terrain_id = "lava_floor";
@@ -97,11 +101,11 @@ ai_game.monster_ability_system = { can_use_special: () => false };
 ai_game.combat_system.monster_attack = () => false;
 const enemy_ai = new EnemyAiSystem(ai_game);
 ai_game.enemy_ai_system = enemy_ai;
-assert.equal(enemy_ai.move_toward(ai_monster, ai_player, 500), true, "monster pathfinding should cross lava and object tiles");
+assert.equal(enemy_ai.move_toward(ai_monster, ai_player, 600), true, "monster pathfinding should cross lava and object tiles");
 assert.deepEqual([ai_monster.grid_x, ai_monster.grid_y], [2, 1]);
 assert.equal(ai_monster.health, 19, "monsters should take lava damage while crossing");
 
-console.log("shared object tiles, underfoot interaction, actor collision, and lava traversal passed");
+console.log("shared object tiles, solid barriers, underfoot interaction, actor collision, and lava traversal passed");
 
 function create_game(grid, player_entity, entities, log_entries, inventory_entries) {
   const random = {
@@ -139,6 +143,9 @@ function create_game(grid, player_entity, entities, log_entries, inventory_entri
     advance_floor: () => {},
     get_living_monsters() {
       return this.entities.filter((entity) => entity.alive && entity.type === "monster");
+    },
+    get_living_companions() {
+      return this.entities.filter((entity) => entity.alive && entity.type === "companion");
     }
   };
   game.combat_system = {
