@@ -1,0 +1,85 @@
+#game_frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 39;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+}
+
+#game_frame.juice-impact::after {
+  animation: juice_impact_frame 140ms ease-out;
+}
+
+#game_frame.juice-reward::after {
+  animation: juice_reward_frame 420ms ease-out;
+}
+
+#game_frame.juice-floor::after {
+  animation: juice_floor_frame 500ms ease-out;
+}
+
+#game_frame.turn-ready .turn_phase {
+  animation: juice_turn_ready 420ms ease-out;
+}
+
+.command_button.juice-active {
+  animation: juice_command_press 220ms ease-out;
+  border-color: #fff6c7;
+  filter: brightness(1.28);
+}
+
+.interaction_prompt:not([hidden]) {
+  animation: juice_prompt_arrive 180ms ease-out, juice_prompt_breathe 1.4s 180ms ease-in-out infinite alternate;
+}
+
+.log_line:first-child {
+  text-shadow: 0 1px 0 #0c1735;
+}
+
+@keyframes juice_impact_frame {
+  0% { opacity: .85; box-shadow: inset 0 0 0 8px #fff3c488; }
+  35% { opacity: .45; box-shadow: inset 0 0 34px 12px #ff8a6866; }
+  100% { opacity: 0; box-shadow: inset 0 0 0 0 transparent; }
+}
+
+@keyframes juice_reward_frame {
+  0% { opacity: 0; box-shadow: inset 0 0 0 0 transparent; }
+  30% { opacity: .85; box-shadow: inset 0 0 42px 8px #ffd96b77; }
+  100% { opacity: 0; box-shadow: inset 0 0 0 0 transparent; }
+}
+
+@keyframes juice_floor_frame {
+  0% { opacity: .9; background: #d9efffcc; }
+  100% { opacity: 0; background: transparent; }
+}
+
+@keyframes juice_turn_ready {
+  0% { transform: scale(.78); filter: brightness(1.8); }
+  55% { transform: scale(1.14); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes juice_command_press {
+  0% { transform: translateY(1px) scale(.9); }
+  45% { transform: translateY(-3px) scale(1.08); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes juice_prompt_arrive {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(.92); }
+}
+
+@keyframes juice_prompt_breathe {
+  to { filter: brightness(1.12); box-shadow: inset 0 0 0 2px #6d91d2, 0 6px 23px #efc96744; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #game_frame::after,
+  #game_frame.turn-ready .turn_phase,
+  .command_button.juice-active,
+  .interaction_prompt:not([hidden]) {
+    animation: none;
+  }
+}
