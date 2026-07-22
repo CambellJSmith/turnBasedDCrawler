@@ -1,3 +1,4 @@
+import { game_config } from "../config/game_config.js";
 import { CanvasRenderer } from "./canvas_renderer.js";
 
 const original_draw_actor = CanvasRenderer.prototype.draw_actor;
@@ -5,13 +6,19 @@ CanvasRenderer.prototype.draw_actor = function draw_actor_or_dungeon_object(enti
   if (entity.type !== "dungeon_object") {
     return original_draw_actor.call(this, entity, screen, now);
   }
-  draw_dungeon_object(this.context, entity, screen.x, screen.y, now);
+  draw_dungeon_object(this, entity, screen.x, screen.y, now);
 };
 
-function draw_dungeon_object(context, object, x, y, now) {
+function draw_dungeon_object(renderer, object, x, y, now) {
   if (object.object_type === "spike_trap" && !object.revealed) {
     return;
   }
+  if (object.object_type === "secret_wall") {
+    draw_secret_wall(renderer, object, x, y);
+    return;
+  }
+
+  const context = renderer.context;
   context.save();
   context.translate(x, y);
 
@@ -23,7 +30,6 @@ function draw_dungeon_object(context, object, x, y, now) {
     case "healing_fountain": draw_fountain(context, object, now); break;
     case "lever": draw_lever(context, object); break;
     case "locked_door": draw_locked_door(context, object); break;
-    case "secret_wall": draw_secret_wall(context, object); break;
     default: break;
   }
 
@@ -161,25 +167,51 @@ function draw_locked_door(context, object) {
   context.fillRect(-4, -18, 8, 9);
 }
 
-function draw_secret_wall(context, object) {
+function draw_secret_wall(renderer, object, x, y) {
+  const context = renderer.context;
   if (object.open) {
+    context.save();
+    context.translate(x, y);
     context.fillStyle = "#3f4148";
     context.fillRect(-18, 0, 12, 5);
     context.fillRect(5, -1, 14, 6);
+    context.restore();
     return;
   }
-  context.fillStyle = object.revealed ? "#38343b" : "#282e3a";
-  context.fillRect(-24, -48, 48, 51);
-  context.strokeStyle = "#151923";
-  context.lineWidth = 2;
-  context.strokeRect(-24, -48, 48, 51);
-  if (object.revealed) {
-    context.strokeStyle = "#a58d69";
-    context.beginPath();
-    context.moveTo(-5, -44);
-    context.lineTo(2, -31);
-    context.lineTo(-3, -18);
-    context.lineTo(6, -4);
-    context.stroke();
-  }
+
+  renderer.draw_wall(x, y);
+
+  context.save();
+  context.translate(x, y);
+  context.lineCap = "round";
+  context.lineJoin = "round";
+
+  const top_y = -game_config.wall_height;
+  context.beginPath();
+  context.moveTo(-7, top_y - 7);
+  context.lineTo(1, top_y - 1);
+  context.lineTo(-3, top_y + 7);
+  context.lineTo(5, top_y + 13);
+  context.strokeStyle = "#10131a";
+  context.lineWidth = 3;
+  context.stroke();
+
+  context.beginPath();
+  context.moveTo(5, top_y + 13);
+  context.lineTo(-2, top_y + 24);
+  context.lineTo(5, top_y + 33);
+  context.lineTo(0, top_y + 43);
+  context.strokeStyle = "#10131a";
+  context.lineWidth = 3;
+  context.stroke();
+
+  context.beginPath();
+  context.moveTo(-1, top_y + 24);
+  context.lineTo(-11, top_y + 29);
+  context.moveTo(4, top_y + 33);
+  context.lineTo(13, top_y + 38);
+  context.strokeStyle = "#4a5263";
+  context.lineWidth = 1;
+  context.stroke();
+  context.restore();
 }
