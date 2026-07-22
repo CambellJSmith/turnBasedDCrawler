@@ -92,7 +92,7 @@ export class CombatSystem {
 
   handle_permanent_companion_death(companion) {
     const member_id = companion.character_id;
-    const removed = this.game.state.party.remove_member(member_id);
+    const removed = this.game.state.party?.remove_member?.(member_id) ?? false;
 
     companion.permanently_dead = true;
     this.game.add_log(
