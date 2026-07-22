@@ -19,6 +19,7 @@ export const terrain_database = Object.freeze({
   archive_floor: { id: "archive_floor", name: "dusty archive tiles", walkable: true, floor_color: "#494238" },
   prison_floor: { id: "prison_floor", name: "iron-scarred floor", walkable: true, floor_color: "#3a3f45" },
   treasure_floor: { id: "treasure_floor", name: "gilded vault floor", walkable: true, floor_color: "#5b4d32" },
+  lava_floor: { id: "lava_floor", name: "molten lava", walkable: false, floor_color: "#b74616" },
   wall: { id: "wall", name: "dungeon wall", walkable: false, floor_color: "#252a35" },
   exit: { id: "exit", name: "descent door", walkable: true, floor_color: "#3a3024" }
 });
