@@ -47,7 +47,16 @@ CanvasRenderer.prototype.draw_depth_sorted_world = function draw_depth_sorted_wo
     } else if (drawable.entity.type === "ground_item") {
       this.draw_ground_item(drawable.entity, screen);
     } else {
+      const cracked_wall = drawable.entity.type === "dungeon_object" &&
+        drawable.entity.object_type === "secret_wall" &&
+        !drawable.entity.open;
+      const obscures_player = cracked_wall &&
+        wall_occludes_player(screen, player_screen, drawable.depth, player_depth);
+
+      this.context.save();
+      this.context.globalAlpha *= obscures_player ? obscuring_wall_opacity : 1;
       this.draw_actor(drawable.entity, screen, now);
+      this.context.restore();
     }
   }
 };
