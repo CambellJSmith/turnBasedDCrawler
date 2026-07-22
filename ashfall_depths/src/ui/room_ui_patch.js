@@ -38,6 +38,7 @@ MenuController.prototype.render_ground_tile = function render_ground_tile_with_r
   const room_type = get_current_room_type(this.game);
   const room_name = room_type?.name ?? "connecting passage";
   const room_description = room_type?.description ?? "A corridor connecting the dungeon's generated chambers.";
+  const traversable = !["wall", "void"].includes(tile.terrain_id);
   const entities = this.game.entities.filter((entity) =>
     entity.alive && entity.grid_x === x && entity.grid_y === y && entity.entity_id !== this.game.player.entity_id
   );
@@ -46,7 +47,7 @@ MenuController.prototype.render_ground_tile = function render_ground_tile_with_r
     <tr><td>room type</td><td>${room_name}</td></tr>
     <tr><td>room description</td><td>${room_description}</td></tr>
     <tr><td>terrain</td><td>${terrain.name}</td></tr>
-    <tr><td>walkable</td><td>${terrain.walkable ? "yes" : "no"}</td></tr>
+    <tr><td>traversable</td><td>${traversable ? "yes" : "no"}</td></tr>
     <tr><td>contents</td><td>${entities.length ? entities.map((entity) => entity.name).join(", ") : "nothing"}</td></tr>
     <tr><td>floor exit</td><td>${tile.terrain_id === "exit" ? "present" : "none"}</td></tr>
   </tbody></table>`;
