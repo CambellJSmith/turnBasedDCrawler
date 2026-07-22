@@ -5,6 +5,6 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "node tests/gamepad_input_test.mjs && node tests/floor_progression_test.mjs && node tests/player_movement_visibility_test.mjs && node tests/game_over_controller_test.mjs"
+    "test": "node tests/gamepad_input_test.mjs && node tests/floor_progression_test.mjs && node tests/player_movement_visibility_test.mjs && node tests/game_over_controller_test.mjs && node tests/player_progression_test.mjs"
   }
 }
