@@ -127,8 +127,8 @@ export class GameFeelSystem {
     return { x, y };
   }
 
-  impact(target, source, amount, now = performance.now()) {
-    const fatal = target.health <= 0;
+  impact(target, source, amount, now = performance.now(), options = {}) {
+    const fatal = options.fatal === true || target.health <= 0;
     const heavy = fatal || amount >= Math.max(8, target.maximum_health * 0.2);
     const direction = this.get_screen_direction(source, target);
 
@@ -142,9 +142,11 @@ export class GameFeelSystem {
       source.juice_lunge_y = direction.y * 2;
     }
 
+    const danger = target.type === "player" || target.type === "companion";
+    const flash_color = danger ? (fatal ? "255,55,70" : "255,100,100") : fatal ? "255,226,170" : "255,255,255";
     this.start_hit_stop(now, heavy ? 72 : 42);
     this.shake(now, heavy ? 7 : 3.5, heavy ? 170 : 100);
-    this.flash(now, fatal ? "255,226,170" : "255,255,255", heavy ? 0.2 : 0.1, heavy ? 120 : 70);
+    this.flash(now, flash_color, danger ? (heavy ? 0.24 : 0.14) : heavy ? 0.2 : 0.1, heavy ? 120 : 70);
     this.spawn_burst(target.grid_x, target.grid_y, heavy ? 14 : 8, fatal ? "gold" : "impact", now);
     this.play_sound(heavy ? "heavy_hit" : "hit");
     this.rumble(heavy ? 0.85 : 0.42, heavy ? 0.55 : 0.25, heavy ? 150 : 80);
@@ -160,11 +162,11 @@ export class GameFeelSystem {
     this.spawn_burst(entity.grid_x, entity.grid_y, 4, "dust", now, direction);
   }
 
-  step(entity, now = performance.now()) {
+  step(entity, now = performance.now(), grid_x = entity?.grid_x, grid_y = entity?.grid_y) {
     if (!entity || !actor_types.has(entity.type)) {
       return;
     }
-    this.spawn_burst(entity.grid_x, entity.grid_y, entity.type === "player" ? 4 : 2, "dust", now);
+    this.spawn_burst(grid_x, grid_y, entity.type === "player" ? 4 : 2, "dust", now);
     if (entity.type === "player") {
       this.play_sound("step");
     }
