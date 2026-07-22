@@ -5,10 +5,12 @@ import "./systems/dungeon_object_gameplay_patch.js";
 import "./systems/dungeon_object_connectivity_patch.js";
 import "./systems/exploration_gameplay_patch.js";
 import "./systems/environment_movement_patch.js";
+import "./systems/shared_tile_gameplay_patch.js";
 import "./systems/level_up_turn_patch.js";
 import "./ui/level_up_input_patch.js";
 import "./render/chest_render_patch.js";
 import "./render/dungeon_object_render_patch.js";
+import "./render/shared_tile_render_patch.js";
 import "./render/player_visibility_patch.js";
 import "./render/fog_render_patch.js";
 import "./ui/level_up_hud_patch.js";
@@ -46,8 +48,8 @@ game.advance_floor = () => {
 
 game.start = () => {
   game.add_log("explore the fog to discover rooms, hazards, treasure, and the wall door");
-  game.add_log("level ups offer three permanent upgrade choices");
-  game.add_log("traps and mechanisms can be triggered, disarmed, broken, opened, or activated");
+  game.add_log("stand on chests and dungeon objects, then interact with the tile beneath you");
+  game.add_log("only walls and other actors block movement · lava remains hazardous");
   game.add_log("monsters remain optional · fighting earns xp, gold, loot, and possible allies");
   requestAnimationFrame(game.loop);
 };
