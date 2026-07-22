@@ -8,22 +8,18 @@ CanvasRenderer.prototype.build_depth_sorted_drawables = function build_drawables
 };
 
 const original_draw_actor = CanvasRenderer.prototype.draw_actor;
-CanvasRenderer.prototype.draw_actor = function draw_actor_with_chests(entity, screen, now) {
+CanvasRenderer.prototype.draw_actor = function draw_ground_chests_only(entity, screen, now) {
   if (entity.type === "chest") {
-    draw_chest(this.context, screen.x, screen.y, 1);
+    draw_chest(this.context, screen.x, screen.y);
     return;
   }
 
   original_draw_actor.call(this, entity, screen, now);
-  if (entity.type === "monster" && entity.carried_chest_id) {
-    draw_chest(this.context, screen.x, screen.y - 42, 0.56);
-  }
 };
 
-function draw_chest(context, x, y, scale) {
+function draw_chest(context, x, y) {
   context.save();
   context.translate(x, y);
-  context.scale(scale, scale);
 
   context.beginPath();
   context.ellipse(0, 9, 19, 6, 0, 0, Math.PI * 2);
