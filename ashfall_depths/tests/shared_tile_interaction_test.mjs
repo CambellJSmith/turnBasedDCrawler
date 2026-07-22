@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { Game } from "../src/core/game.js";
 import { dungeon_object_definitions } from "../src/data/dungeon_objects.js";
 import { create_treasure_chest, ChestSystem } from "../src/systems/chest_system.js";
 import { create_dungeon_object, DungeonObjectSystem } from "../src/systems/dungeon_object_system.js";
@@ -142,8 +141,6 @@ function create_game(grid, player_entity, entities, log_entries, inventory_entri
       return this.entities.filter((entity) => entity.alive && entity.type === "monster");
     }
   };
-  game.is_tile_blocked = Game.prototype.is_tile_blocked.bind(game);
-  game.can_actor_traverse = Game.prototype.can_actor_traverse.bind(game);
   game.combat_system = {
     apply_damage(target, amount) {
       target.health = Math.max(0, target.health - amount);
