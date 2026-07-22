@@ -55,16 +55,26 @@ export class GameFeelSystem {
     if (this.game.state?.settings?.screen_shake === false) {
       return;
     }
+    if (now >= this.shake_until) {
+      this.shake_intensity = intensity;
+      this.shake_until = now + duration;
+    } else {
+      this.shake_intensity = Math.max(this.shake_intensity, intensity);
+      this.shake_until = Math.max(this.shake_until, now + duration);
+    }
     this.shake_started_at = now;
-    this.shake_until = Math.max(this.shake_until, now + duration);
-    this.shake_intensity = Math.max(this.shake_intensity, intensity);
   }
 
   flash(now, color = "255,255,255", alpha = 0.18, duration = 90) {
+    if (now >= this.flash_until) {
+      this.flash_alpha = alpha;
+      this.flash_until = now + duration;
+    } else {
+      this.flash_alpha = Math.max(this.flash_alpha, alpha);
+      this.flash_until = Math.max(this.flash_until, now + duration);
+    }
     this.flash_started_at = now;
-    this.flash_until = Math.max(this.flash_until, now + duration);
     this.flash_color = color;
-    this.flash_alpha = Math.max(this.flash_alpha, alpha);
   }
 
   get_shake(now) {
@@ -324,7 +334,8 @@ export class GameFeelSystem {
       return;
     }
     if (context.state === "suspended") {
-      context.resume?.().then(() => this.play_sound(kind)).catch?.(() => {});
+      const resume_result = context.resume?.();
+      resume_result?.then?.(() => this.play_sound(kind)).catch?.(() => {});
       return;
     }
 
