@@ -1,21 +1,209 @@
-@media (max-width: 1100px) {
+#controls_panel {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.side_panel_header {
+  padding: 5px 4px 1px;
+  text-align: center;
+  text-shadow: 0 3px 0 #081126;
+}
+.side_panel_header h1 {
+  margin: 1px 0 0;
+  color: #fff6ce;
+  font-size: 22px;
+  letter-spacing: .03em;
+}
+.side_panel_kicker {
+  color: #efc967;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.side_window {
+  padding: 12px;
+}
+
+.side_window_heading {
+  margin-bottom: 9px;
+}
+.side_window_heading h2 {
+  margin: 0;
+  color: #fff6cf;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+#minimap_canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 3px solid #fff0b5;
+  border-radius: 12px;
+  background: #071020;
+  box-shadow: inset 0 0 0 3px #20396e, 0 4px 0 #0b1737;
+  image-rendering: pixelated;
+}
+
+.map_legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px 9px;
+  margin-top: 9px;
+  color: #c7d5ef;
+  font-size: 9px;
+}
+.map_legend span { display: flex; align-items: center; gap: 5px; }
+.legend_dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #fff8d5;
+  border-radius: 50%;
+}
+.player_dot { background: #eaf5ff; }
+.ally_dot { background: #e7d28a; }
+.enemy_dot { background: #d95a63; }
+.treasure_dot { background: #e3b84f; }
+
+.objective_text {
+  margin: 0;
+  min-height: 38px;
+  color: #fff7d6;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.progress_stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid #f4dda044;
+  color: #bcd0f4;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+#party_status_list {
+  display: grid;
+  gap: 7px;
+}
+
+.party_member {
+  display: grid;
+  grid-template-columns: 35px 1fr;
+  gap: 7px;
+  align-items: center;
+  min-width: 0;
+  padding: 7px;
+  border: 2px solid #839ed1;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #344f88, #213a6d);
+  box-shadow: inset 0 0 0 2px #ffffff0a;
+}
+.party_member.fallen { opacity: .48; filter: grayscale(.7); }
+.party_portrait {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff0b4;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #8fc8ff, #526cad 60%, #293c74);
+  color: #fff;
+  font-weight: 900;
+  text-shadow: 0 1px 0 #172957;
+}
+.party_member.player_member .party_portrait { background: radial-gradient(circle at 35% 30%, #ffd876, #d36d3e 58%, #703246); }
+.party_details { min-width: 0; }
+.party_name_line { display: flex; justify-content: space-between; gap: 5px; }
+.party_name_line strong { overflow: hidden; color: #fff8d8; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.party_role { color: #bcd0f4; font-size: 8px; font-weight: 900; text-transform: uppercase; }
+.party_hp_line { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; margin-top: 5px; }
+.party_hp_bar { height: 8px; overflow: hidden; border: 1px solid #09142f; border-radius: 999px; background: #071020; }
+.party_hp_fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #159b51, #55d66f); box-shadow: inset 0 1px 0 #ffffff55; }
+.party_hp_fill.low { background: linear-gradient(90deg, #bf801e, #f2c84b); }
+.party_hp_fill.critical { background: linear-gradient(90deg, #9f2537, #ef5d5d); }
+.party_hp_text { color: #dce8ff; font-size: 8px; white-space: nowrap; }
+
+.controls_guide {
+  padding: 0;
+  overflow: hidden;
+}
+.controls_guide summary {
+  padding: 11px 13px;
+  color: #fff6cf;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  list-style: none;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.controls_guide summary::-webkit-details-marker { display: none; }
+.controls_guide summary::after { content: "+"; float: right; color: #efc967; }
+.controls_guide[open] summary::after { content: "−"; }
+.controls_guide[open] summary { border-bottom: 1px solid #f4dda044; }
+.control_group { padding: 10px 12px 0; }
+.control_group h3 { margin: 0 0 6px; color: #efc967; font-size: 10px; text-transform: uppercase; }
+.control_group p { margin: 6px 0; color: #c9d7f1; font-size: 10px; line-height: 1.4; }
+kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border: 1px solid #fff0b4;
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: #172957;
+  color: #fff7d4;
+  font-size: 8px;
+  font-weight: 900;
+  box-shadow: inset 0 0 0 1px #3c5a96;
+}
+.gamepad_status,
+.control_note {
+  margin: 9px 12px 0;
+  padding: 7px 8px;
+  border: 1px solid #7d98ca;
+  border-radius: 8px;
+  background: #10204b;
+  color: #bcd0f4;
+  font-size: 9px;
+}
+.control_note { margin-bottom: 12px; color: #f0d987; }
+.gamepad_status.connected { border-color: #8ed081; color: #d7f4c9; }
+
+@media (max-width: 920px) {
   #controls_panel {
-    display: block;
-    width: min(240px, 100%);
-    margin: 0 auto;
-    padding: 0;
-    border: 0;
-    background: transparent;
+    grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) minmax(250px, 1.2fr);
+    align-items: stretch;
   }
+  .side_panel_header { display: none; }
+  #minimap_panel { grid-column: 1; grid-row: 1 / 3; }
+  #objective_panel { grid-column: 2; }
+  #party_panel { grid-column: 3; grid-row: 1 / 3; }
+  #controls_guide { grid-column: 2; }
+  #minimap_canvas { max-height: 210px; object-fit: contain; }
+}
 
-  #controls_panel > :not(#minimap_panel) {
-    display: none;
-  }
+@media (max-width: 720px) {
+  #controls_panel { grid-template-columns: 1fr 1fr; }
+  #minimap_panel { grid-column: 1; grid-row: auto; }
+  #objective_panel { grid-column: 2; }
+  #party_panel { grid-column: 1 / -1; grid-row: auto; }
+  #party_status_list { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  #controls_guide { grid-column: 1 / -1; }
+}
 
-  #minimap_panel {
-    margin: 0;
-    padding: 12px;
-    border: 1px solid #444b61;
-    background: #10131c;
-  }
+@media (max-width: 500px) {
+  #controls_panel { grid-template-columns: 1fr; }
+  #minimap_panel,
+  #objective_panel,
+  #party_panel,
+  #controls_guide { grid-column: 1; }
 }
