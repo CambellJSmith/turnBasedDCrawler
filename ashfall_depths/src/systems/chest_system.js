@@ -1,4 +1,5 @@
 import { item_database } from "../data/items.js";
+import { get_player_upgrade_rank } from "../data/player_upgrades.js";
 import { find_next_step } from "../world/pathfinding.js";
 
 const cardinal_directions = Object.freeze([
@@ -40,6 +41,7 @@ export class ChestSystem {
         continue;
       }
       const chest = create_treasure_chest(this.game.dungeon.random, floor, position.x, position.y);
+      this.apply_reward_upgrades(chest);
       this.game.entities.push(chest);
       spawned.push(chest);
     }
@@ -48,6 +50,23 @@ export class ChestSystem {
       this.game.add_log(`${spawned.length} unopened ${spawned.length === 1 ? "chest waits" : "chests wait"} somewhere on this floor`);
     }
     return spawned;
+  }
+
+  apply_reward_upgrades(chest) {
+    const rank = get_player_upgrade_rank(this.game.state, "chest_rewards");
+    if (rank <= 0) {
+      return chest;
+    }
+
+    chest.reward_gold = Math.max(1, Math.round(chest.reward_gold * (1 + rank * 0.2)));
+    const guaranteed_extra_items = Math.floor(rank / 4);
+    for (let index = 0; index < guaranteed_extra_items; index += 1) {
+      chest.reward_item_ids.push(this.game.dungeon.random.pick(reward_item_pool));
+    }
+    if (this.game.dungeon.random.chance(Math.min(0.65, rank * 0.1))) {
+      chest.reward_item_ids.push(this.game.dungeon.random.pick(reward_item_pool));
+    }
+    return chest;
   }
 
   find_spawn_position() {
