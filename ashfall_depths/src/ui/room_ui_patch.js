@@ -7,10 +7,20 @@ const original_hud_update = HudController.prototype.update;
 HudController.prototype.update = function update_with_room_type() {
   original_hud_update.call(this);
   this.room_text ??= document.querySelector("#room_text");
+  this.room_description_text ??= document.querySelector("#room_description_text");
+  this.game_frame ??= document.querySelector("#game_frame");
   const room_type = get_current_room_type(this.game);
   const room_name = room_type?.name ?? "connecting passage";
+  const room_description = room_type?.description ?? "A narrow route linking the dungeon's generated chambers.";
+
   if (this.room_text) {
-    this.room_text.textContent = room_name;
+    this.room_text.textContent = title_case(room_name);
+  }
+  if (this.room_description_text) {
+    this.room_description_text.textContent = room_description;
+  }
+  if (this.game_frame) {
+    this.game_frame.dataset.roomType = room_type?.id ?? "corridor";
   }
   if (room_type && this.last_announced_room_type_id !== room_type.id) {
     if (this.last_announced_room_type_id !== undefined) {
@@ -31,7 +41,7 @@ MenuController.prototype.render_ground_tile = function render_ground_tile_with_r
   const entities = this.game.entities.filter((entity) =>
     entity.alive && entity.grid_x === x && entity.grid_y === y && entity.entity_id !== this.game.player.entity_id
   );
-  return `<h2>ground tile</h2><table class="stat_table"><tbody>
+  return `<h2>Ground Tile</h2><table class="stat_table"><tbody>
     <tr><td>coordinates</td><td>${x}, ${y}</td></tr>
     <tr><td>room type</td><td>${room_name}</td></tr>
     <tr><td>room description</td><td>${room_description}</td></tr>
@@ -45,4 +55,10 @@ MenuController.prototype.render_ground_tile = function render_ground_tile_with_r
 function get_current_room_type(game) {
   const tile = game.dungeon.grid.get_tile(game.player.grid_x, game.player.grid_y);
   return room_type_database[tile?.room_type_id] ?? null;
+}
+
+function title_case(value) {
+  return String(value)
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
