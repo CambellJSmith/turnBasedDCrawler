@@ -69,6 +69,7 @@ export function create_recruitable(character_id, grid_x, grid_y) {
   return {
     ...create_base_entity("recruitable", grid_x, grid_y),
     character_id,
+    recruitment_kind: "character",
     name: data.name,
     maximum_health: data.maximum_health,
     health: data.maximum_health,
@@ -99,6 +100,27 @@ export function create_companion(character_id, grid_x, grid_y) {
     magic_power: data.magic_power,
     color: data.color,
     spell_ids: [...data.starting_spells]
+  };
+}
+
+export function create_monster_companion(member, grid_x, grid_y) {
+  return {
+    ...create_base_entity("companion", grid_x, grid_y),
+    character_id: member.member_id,
+    monster_id: member.monster_id,
+    recruited_monster: true,
+    name: member.name,
+    archetype: member.archetype,
+    ai_profile: member.ai_profile,
+    maximum_health: member.maximum_health,
+    health: member.maximum_health,
+    maximum_magic: member.maximum_magic,
+    magic: member.maximum_magic,
+    attack: member.attack,
+    defence: member.defence,
+    magic_power: member.magic_power,
+    color: member.color,
+    spell_ids: []
   };
 }
 
