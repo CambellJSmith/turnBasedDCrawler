@@ -8,7 +8,7 @@ export function get_floor_progression(floor_number) {
     map_height: 12 + Math.floor(depth / 2),
     room_count: 2 + Math.floor(depth / 3),
     minimum_room_size: 3,
-    maximum_room_size: 5 + Math.floor(depth / 18),
+    maximum_room_size: 5 + Math.floor(depth / 6),
     extra_connection_count: Math.floor(depth / 6),
     monster_count: 1 + Math.floor(depth / 3),
     monster_threat_limit: 62 + depth * 2.5,
