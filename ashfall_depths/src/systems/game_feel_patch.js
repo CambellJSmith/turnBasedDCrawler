@@ -1,3 +1,5 @@
+import { game_config } from "../config/game_config.js";
+import { clamp, lerp } from "../utils/math.js";
 import { ChestSystem } from "./chest_system.js";
 import { CombatSystem } from "./combat_system.js";
 import { DungeonObjectSystem } from "./dungeon_object_system.js";
@@ -10,15 +12,17 @@ import { LevelUpController } from "../ui/level_up_controller.js";
 const previous_apply_damage = CombatSystem.prototype.apply_damage;
 CombatSystem.prototype.apply_damage = function apply_damage_with_impact(target, amount, source, now) {
   const health_before = target.health;
+  const incoming_damage = Math.max(0, Number(amount) || 0);
+  const would_be_fatal = health_before - incoming_damage <= 0;
   const result = previous_apply_damage.call(this, target, amount, source, now);
-  const damage_dealt = Math.max(0, health_before - target.health);
+  const damage_dealt = Math.min(health_before, incoming_damage);
   if (damage_dealt > 0) {
     const combat_text = this.game.combat_texts.at(-1);
     if (combat_text && combat_text.grid_x === target.grid_x && combat_text.grid_y === target.grid_y) {
       combat_text.kind = target.type === "player" || target.type === "companion" ? "danger" : "damage";
-      combat_text.emphasis = damage_dealt >= Math.max(8, target.maximum_health * 0.2) || target.health <= 0;
+      combat_text.emphasis = damage_dealt >= Math.max(8, target.maximum_health * 0.2) || would_be_fatal;
     }
-    this.game.game_feel?.impact(target, source, damage_dealt, now);
+    this.game.game_feel?.impact(target, source, damage_dealt, now, { fatal: would_be_fatal });
   }
   return result;
 };
@@ -43,8 +47,25 @@ CombatSystem.prototype.player_attack = function player_attack_with_swing(now) {
 
 const previous_begin_move = MovementSystem.prototype.begin_move;
 MovementSystem.prototype.begin_move = function begin_move_with_step_feedback(entity, target_x, target_y, now) {
+  const departure_x = entity.display_x;
+  const departure_y = entity.display_y;
   previous_begin_move.call(this, entity, target_x, target_y, now);
-  this.game.game_feel?.step(entity, now);
+  this.game.game_feel?.step(entity, now, departure_x, departure_y);
+};
+
+MovementSystem.prototype.update_entity = function update_entity_with_snappy_easing(entity, now) {
+  if (!entity.moving) {
+    entity.display_x = entity.grid_x;
+    entity.display_y = entity.grid_y;
+    return;
+  }
+  const progress = clamp((now - entity.move_started_at) / game_config.movement_duration_ms, 0, 1);
+  const eased_progress = 1 - Math.pow(1 - progress, 3);
+  entity.display_x = lerp(entity.move_from_x, entity.grid_x, eased_progress);
+  entity.display_y = lerp(entity.move_from_y, entity.grid_y, eased_progress);
+  if (progress >= 1) {
+    entity.moving = false;
+  }
 };
 
 const previous_cast = MagicSystem.prototype.cast;
