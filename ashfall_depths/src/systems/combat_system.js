@@ -86,8 +86,25 @@ export class CombatSystem {
       }
     }
     if (entity.type === "companion") {
-      this.game.add_log(`${entity.name} has fallen for this floor`);
+      this.handle_permanent_companion_death(entity);
     }
+  }
+
+  handle_permanent_companion_death(companion) {
+    const member_id = companion.character_id;
+    const removed = this.game.state.party.remove_member(member_id);
+
+    companion.permanently_dead = true;
+    this.game.add_log(
+      removed
+        ? `${companion.name} has died and is permanently lost from the team`
+        : `${companion.name} has died permanently`
+    );
+
+    if (removed) {
+      this.game.save_manager?.save(this.game);
+    }
+    return removed;
   }
 
   revive_as_recruitable(entity) {
