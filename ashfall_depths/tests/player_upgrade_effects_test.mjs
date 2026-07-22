@@ -109,7 +109,7 @@ combat_system.defeat_entity({
   grid_x: 2,
   grid_y: 2
 }, { type: "player" });
-assert.equal(observed_recruitment_chance, 0.07);
+assert.ok(Math.abs(observed_recruitment_chance - 0.07) < 1e-9);
 
 const lava_ranks = create_default_player_upgrade_ranks();
 lava_ranks.lava_resistance = 2;
