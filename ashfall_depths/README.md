@@ -2,6 +2,14 @@
 
 A modular browser-game starter for an isometric, turn-based roguelike dungeon crawler. It combines tile-based exploration, procedural floors, loot, spells, party recruitment, and JRPG-style menus.
 
+## play online
+
+The game is deployed to GitHub Pages at:
+
+`https://cambelljsmith.github.io/turnBasedDCrawler/`
+
+The workflow in `.github/workflows/deploy-pages.yml` publishes the contents of `ashfall_depths/` whenever changes are pushed to `main`. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
+
 ## turn rules
 
 Every completed turn resolves in this order:
@@ -71,7 +79,8 @@ Monster health and magic regenerate at the same end-of-turn rate as the player p
 
 ## requirements
 
-- Node.js 20 or newer
+- Node.js 20 or newer for local hosting
+- no local runtime requirements when playing through GitHub Pages
 
 ## run locally
 
@@ -79,7 +88,7 @@ Monster health and magic regenerate at the same end-of-turn rate as the player p
 npm start
 ```
 
-Alternatively, run `start_game.bat` on Windows or `./start_game.sh` on macOS and Linux. Open `http://127.0.0.1:5173` in a browser. No dependency installation or build step is required.
+Alternatively, run `start_game.bat` on Windows or `./start_game.sh` on macOS and Linux. Each launcher starts the local server and opens `http://127.0.0.1:5173` in the default browser. No dependency installation or build step is required.
 
 ## controls
 
@@ -112,6 +121,7 @@ In menus, use the d-pad or left stick to move focus, `a` to activate the focused
 
 ## project layout
 
+- `.github/workflows/deploy-pages.yml` deploys `ashfall_depths/` to GitHub Pages.
 - `src/config/` contains game and input configuration.
 - `src/core/` owns the main runtime and animation loop.
 - `src/data/` contains grouped content databases.
