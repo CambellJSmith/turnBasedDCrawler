@@ -9,6 +9,8 @@ assert.equal(floor_one.map_width, 12);
 assert.equal(floor_one.map_height, 12);
 assert.equal(floor_one.monster_count, 1);
 assert.equal(floor_one.room_count, 2);
+assert.equal(floor_one.lava_patch_count, 0);
+assert.equal(get_floor_progression(2).lava_patch_count, 1);
 assert.equal(get_floor_progression(3).monster_count, 1, "floors 1 through 3 should contain one enemy");
 assert.equal(get_floor_progression(4).monster_count, 2, "floor 4 should introduce the second enemy");
 assert.equal(get_floor_progression(7).monster_count, 3, "enemy count should rise once every three floors");
@@ -27,6 +29,8 @@ for (let floor = 2; floor <= 500; floor += 1) {
   assert.ok(current.map_width >= previous.map_width, `map width must not shrink on floor ${floor}`);
   assert.ok(current.map_height >= previous.map_height, `map height must not shrink on floor ${floor}`);
   assert.ok(current.monster_count >= previous.monster_count, `monster count must not shrink on floor ${floor}`);
+  assert.ok(current.lava_patch_count >= previous.lava_patch_count, `lava patch count must not shrink on floor ${floor}`);
+  assert.ok(current.lava_patch_maximum_size >= previous.lava_patch_maximum_size, `lava patch size must not shrink on floor ${floor}`);
   assert.ok(current.health_multiplier > previous.health_multiplier, `health scaling must grow on floor ${floor}`);
   assert.ok(current.attack_multiplier > previous.attack_multiplier, `attack scaling must grow on floor ${floor}`);
   previous = current;
@@ -35,6 +39,7 @@ for (let floor = 2; floor <= 500; floor += 1) {
 const floor_five_hundred = get_floor_progression(500);
 assert.ok(floor_five_hundred.map_width > floor_one.map_width);
 assert.ok(floor_five_hundred.monster_count > floor_one.monster_count);
+assert.ok(floor_five_hundred.lava_patch_count > floor_one.lava_patch_count);
 assert.ok(floor_five_hundred.attack_multiplier > floor_one.attack_multiplier);
 
 const directions = [[1, 0], [-1, 0], [0, 1], [0, -1]];
