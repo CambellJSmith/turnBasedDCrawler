@@ -1,3 +1,5 @@
+import "./world/lava_generation_patch.js";
+import "./render/lava_render_patch.js";
 import "./render/player_visibility_patch.js";
 import "./ui/player_progression_ui_patch.js";
 import "./ui/room_ui_patch.js";
@@ -30,9 +32,9 @@ game.advance_floor = () => {
 
 game.start = () => {
   game.add_log("find the wall door whenever you want to descend");
-  game.add_log("rooms now use distinct layouts, architecture, and floor materials");
+  game.add_log("lava is impassable, but every generated route remains fully connected");
+  game.add_log("rooms use distinct layouts, architecture, and floor materials");
   game.add_log("monsters are optional · fighting earns xp, gold, loot, and possible allies");
-  game.add_log("each floor grows larger and more dangerous without a level cap");
   requestAnimationFrame(game.loop);
 };
 
