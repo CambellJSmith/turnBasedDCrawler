@@ -62,11 +62,11 @@ export class CombatSystem {
       this.game.add_log(`${source.name} deals ${amount} to ${target.name}`);
     }
     if (target.health <= 0 && target.alive) {
-      this.defeat_entity(target);
+      this.defeat_entity(target, source);
     }
   }
 
-  defeat_entity(entity) {
+  defeat_entity(entity, source = null) {
     entity.alive = false;
     if (entity.type === "monster") {
       const data = monster_database[entity.monster_id];
@@ -74,10 +74,32 @@ export class CombatSystem {
       this.game.state.gold += gold;
       this.game.state.defeated_monsters += 1;
       this.game.add_log(`${entity.name} falls · ${gold} gold`);
-      this.game.loot_system.roll_monster_drop(entity, data);
+
+      if (source?.type === "player" && this.game.dungeon.random.chance(0.01)) {
+        this.revive_as_recruitable(entity);
+      } else {
+        this.game.loot_system.roll_monster_drop(entity, data);
+      }
     }
     if (entity.type === "companion") {
       this.game.add_log(`${entity.name} has fallen for this floor`);
     }
+  }
+
+  revive_as_recruitable(entity) {
+    entity.type = "recruitable";
+    entity.character_id = `reformed_${entity.monster_id}_${entity.entity_id}`;
+    entity.recruitment_kind = "monster";
+    entity.recruited = false;
+    entity.alive = true;
+    entity.health = Math.max(1, Math.ceil(entity.maximum_health * 0.25));
+    entity.magic = Math.max(0, Math.ceil(entity.maximum_magic * 0.25));
+    entity.dialogue = [
+      `${entity.name} drags itself back from death.`,
+      "It lowers its weapon and offers its strength to your team.",
+      "Accept this unlikely ally?"
+    ];
+    this.game.add_effect("heal", entity.grid_x, entity.grid_y);
+    this.game.add_log(`${entity.name} returns from death and offers to join you`);
   }
 }
