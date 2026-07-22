@@ -276,10 +276,16 @@ export class MenuController {
   }
 
   render_team() {
-    const cards = this.game.state.party.member_ids.map((character_id, index) => {
-      const character = character_database[character_id];
-      const runtime = character_id === "hero" ? this.game.player : this.game.get_living_companions().find((member) => member.character_id === character_id);
-      return `<article class="menu_card ${index === 0 ? "selected" : ""}"><h3>${character.name}</h3><p>${index === 0 ? "party leader · acts first" : "active companion · acts after player"}</p><p>health: ${runtime?.health ?? 0} / ${character.maximum_health}</p><p>magic power: ${character.magic_power}</p></article>`;
+    const cards = this.game.state.party.member_ids.map((member_id, index) => {
+      const monster_member = this.game.state.party.get_monster_member(member_id);
+      const character = monster_member ?? character_database[member_id];
+      const runtime = member_id === "hero" ? this.game.player : this.game.get_living_companions().find((member) => member.character_id === member_id);
+      const role = index === 0
+        ? "party leader · acts first"
+        : monster_member
+          ? "reformed monster · acts after player"
+          : "active companion · acts after player";
+      return `<article class="menu_card ${index === 0 ? "selected" : ""}"><h3>${character.name}</h3><p>${role}</p><p>health: ${runtime?.health ?? 0} / ${character.maximum_health}</p><p>attack: ${character.attack} · defence: ${character.defence}</p><p>magic power: ${character.magic_power}</p></article>`;
     }).join("");
     return `<h2>team</h2><p>${this.game.state.party.member_ids.length} / ${this.game.state.party.maximum_members} active members</p><div class="menu_grid">${cards}</div>`;
   }
