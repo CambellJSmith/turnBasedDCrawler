@@ -1,10 +1,10 @@
 {
   "name": "ashfall-depths-browser-game",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "node tests/gamepad_input_test.mjs && node tests/floor_progression_test.mjs && node tests/player_movement_visibility_test.mjs && node tests/game_over_controller_test.mjs && node tests/player_progression_test.mjs && node tests/player_upgrade_effects_test.mjs && node tests/room_types_test.mjs && node tests/lava_generation_test.mjs && node tests/chest_system_test.mjs && node tests/chest_privacy_test.mjs && node tests/dungeon_object_system_test.mjs && node tests/exploration_system_test.mjs && node tests/system_integration_guardrails_test.mjs && node tests/shared_tile_interaction_test.mjs && node tests/ui_shell_test.mjs"
+    "test": "node tests/gamepad_input_test.mjs && node tests/floor_progression_test.mjs && node tests/player_movement_visibility_test.mjs && node tests/game_over_controller_test.mjs && node tests/player_progression_test.mjs && node tests/player_upgrade_effects_test.mjs && node tests/room_types_test.mjs && node tests/lava_generation_test.mjs && node tests/chest_system_test.mjs && node tests/chest_privacy_test.mjs && node tests/dungeon_object_system_test.mjs && node tests/exploration_system_test.mjs && node tests/system_integration_guardrails_test.mjs && node tests/shared_tile_interaction_test.mjs && node tests/ui_shell_test.mjs && node tests/solid_barrier_render_test.mjs"
   }
 }
