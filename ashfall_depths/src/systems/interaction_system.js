@@ -26,7 +26,7 @@ export class InteractionSystem {
     }
 
     const tile = this.game.dungeon.grid.get_tile(this.game.player.grid_x, this.game.player.grid_y);
-    if (tile?.terrain_id === "exit" && this.game.get_living_monsters().length === 0) {
+    if (tile?.terrain_id === "exit") {
       this.game.advance_floor();
       return { consumes_turn: true, skip_non_player_turns: true };
     }
@@ -56,7 +56,7 @@ export class InteractionSystem {
     }
     const tile = this.game.dungeon.grid.get_tile(this.game.player.grid_x, this.game.player.grid_y);
     if (tile?.terrain_id === "exit") {
-      return this.game.get_living_monsters().length === 0 ? "press e or xbox a to descend" : "defeat the remaining enemies";
+      return "press e or xbox a to descend · remaining enemies are optional";
     }
     return "";
   }
