@@ -1,8 +1,9 @@
 import { game_config } from "../config/game_config.js";
+import { get_floor_progression, calculate_monster_threat } from "../config/floor_progression.js";
 import { input_actions } from "../config/input_config.js";
 import { item_database } from "../data/items.js";
 import { monster_database } from "../data/monsters.js";
-import { create_ground_item, create_monster, create_player, create_recruitable, create_companion } from "../entities/entity_factory.js";
+import { create_ground_item, create_monster, create_player, create_recruitable, create_companion, create_monster_companion } from "../entities/entity_factory.js";
 import { CanvasRenderer } from "../render/canvas_renderer.js";
 import { SaveManager } from "../save/save_manager.js";
 import { GameState } from "../state/game_state.js";
@@ -59,9 +60,9 @@ export class Game {
 
   start() {
     this.add_log("turn-based mode · every significant action advances the dungeon");
-    this.add_log("all living combatants recover 2 health and 2 magic after every turn");
-    this.add_log("xbox controller supported · press any controller button to connect");
-    this.add_log("find mira, collect loot, and clear the floor");
+    this.add_log("each floor grows larger, denser, and more dangerous without a level cap");
+    this.add_log("rarely, a monster defeated by you may return and ask to join");
+    this.add_log("find the door in the wall after defeating the floor's enemies");
     requestAnimationFrame(this.loop);
   }
 
@@ -76,7 +77,13 @@ export class Game {
 
   generate_floor() {
     const seed = Date.now() + this.state.floor * 7919;
-    this.dungeon = generate_dungeon(game_config.map_width, game_config.map_height, seed);
+    this.floor_progression = get_floor_progression(this.state.floor);
+    this.dungeon = generate_dungeon(
+      this.floor_progression.map_width,
+      this.floor_progression.map_height,
+      seed,
+      this.floor_progression
+    );
     this.entities = [];
     this.effects = [];
     this.combat_texts = [];
@@ -93,22 +100,27 @@ export class Game {
     this.entities.push(this.player);
 
     const used_positions = new Set([`${this.player.grid_x},${this.player.grid_y}`]);
-    const floor_positions = this.dungeon.grid.get_floor_positions().filter((position) =>
-      Math.hypot(position.x - this.player.grid_x, position.y - this.player.grid_y) > 5
+    const all_floor_positions = this.dungeon.grid.get_floor_positions().filter((position) =>
+      !(position.x === this.player.grid_x && position.y === this.player.grid_y) &&
+      !(position.x === this.dungeon.exit.x && position.y === this.dungeon.exit.y)
     );
+    const distant_positions = all_floor_positions.filter((position) =>
+      Math.hypot(position.x - this.player.grid_x, position.y - this.player.grid_y) > this.floor_progression.minimum_spawn_distance
+    );
+    const floor_positions = distant_positions.length >= this.floor_progression.monster_count
+      ? distant_positions
+      : all_floor_positions;
 
-    const monster_count = 8 + Math.min(6, this.state.floor);
-    this.spawn_monsters(monster_count, floor_positions, used_positions);
+    this.spawn_monsters(this.floor_progression, floor_positions, used_positions);
 
     if (!this.state.unlocked_character_ids.includes("mira_ashwalker")) {
       const recruit_position = this.take_random_position(floor_positions, used_positions);
       if (recruit_position) {
         this.entities.push(create_recruitable("mira_ashwalker", recruit_position.x, recruit_position.y));
       }
-    } else if (this.state.party.member_ids.includes("mira_ashwalker")) {
-      const companion_position = this.find_open_near(this.player.grid_x, this.player.grid_y);
-      this.entities.push(create_companion("mira_ashwalker", companion_position.x, companion_position.y));
     }
+
+    this.spawn_party_companions();
 
     for (const item_id of ["healing_potion", "mana_potion", "iron_sabre"]) {
       const position = this.take_random_position(floor_positions, used_positions);
@@ -118,9 +130,31 @@ export class Game {
     }
   }
 
-  spawn_monsters(monster_count, floor_positions, used_positions) {
-    const available_entries = Object.values(monster_database).filter((monster) => monster.minimum_floor <= this.state.floor);
-    const guaranteed_archetypes = ["bruiser", "glass_cannon", "tank"];
+  spawn_party_companions() {
+    for (const member_id of this.state.party.member_ids.slice(1)) {
+      const companion_position = this.find_open_near(this.player.grid_x, this.player.grid_y);
+      const monster_member = this.state.party.get_monster_member(member_id);
+      if (monster_member) {
+        this.entities.push(create_monster_companion(monster_member, companion_position.x, companion_position.y));
+      } else {
+        this.entities.push(create_companion(member_id, companion_position.x, companion_position.y));
+      }
+    }
+  }
+
+  spawn_monsters(progression, floor_positions, used_positions) {
+    if (progression.floor === 1) {
+      const position = this.take_random_position(floor_positions, used_positions);
+      if (position) {
+        this.entities.push(this.create_scaled_monster("ember_slime", position.x, position.y, progression));
+      }
+      return;
+    }
+
+    const unlocked_entries = Object.values(monster_database).filter((monster) => monster.minimum_floor <= progression.floor);
+    const threat_filtered_entries = unlocked_entries.filter((monster) => calculate_monster_threat(monster) <= progression.monster_threat_limit);
+    const available_entries = threat_filtered_entries.length > 0 ? threat_filtered_entries : unlocked_entries;
+    const guaranteed_archetypes = ["bruiser", "glass_cannon", "tank"].slice(0, progression.guaranteed_archetype_count);
     let spawned_count = 0;
 
     for (const archetype of guaranteed_archetypes) {
@@ -130,19 +164,35 @@ export class Game {
         continue;
       }
       const monster = this.pick_weighted_monster(candidates);
-      this.entities.push(create_monster(monster.id, position.x, position.y));
+      this.entities.push(this.create_scaled_monster(monster.id, position.x, position.y, progression));
       spawned_count += 1;
     }
 
-    while (spawned_count < monster_count) {
+    while (spawned_count < progression.monster_count) {
       const position = this.take_random_position(floor_positions, used_positions);
       if (!position || available_entries.length === 0) {
         break;
       }
       const monster = this.pick_weighted_monster(available_entries);
-      this.entities.push(create_monster(monster.id, position.x, position.y));
+      this.entities.push(this.create_scaled_monster(monster.id, position.x, position.y, progression));
       spawned_count += 1;
     }
+  }
+
+  create_scaled_monster(monster_id, x, y, progression) {
+    const monster = create_monster(monster_id, x, y);
+    monster.maximum_health = Math.max(1, Math.round(monster.maximum_health * progression.health_multiplier));
+    monster.health = monster.maximum_health;
+    monster.maximum_magic = Math.max(0, Math.round(monster.maximum_magic * progression.magic_multiplier));
+    monster.magic = monster.maximum_magic;
+    monster.attack = Math.max(1, Math.round(monster.attack * progression.attack_multiplier));
+    monster.magic_power = Math.max(0, Math.round(monster.magic_power * progression.magic_multiplier));
+    monster.defence = Math.max(0, Math.round(monster.defence * progression.attack_multiplier) + progression.defence_bonus);
+    monster.difficulty_floor = progression.floor;
+    if (progression.floor === 1) {
+      monster.special_ability = null;
+    }
+    return monster;
   }
 
   pick_weighted_monster(monsters) {
