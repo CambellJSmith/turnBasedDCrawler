@@ -1,24 +1,190 @@
-#menu_window { width: min(820px, calc(100% - 34px)); height: min(520px, calc(100% - 34px)); display: grid; grid-template-rows: auto auto 1fr; border: 1px solid #858da5; background: #11151f; box-shadow: 0 20px 80px #000d; }
-.menu_header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #363d51; }
-.menu_header h1 { margin: 0; font-size: 18px; text-transform: lowercase; letter-spacing: .08em; }
-.menu_header button, .dialogue_box button, .menu_button { padding: 7px 11px; border: 1px solid #69718a; background: #252b3a; color: #fff; }
-.menu_header button:hover, .dialogue_box button:hover, .menu_button:hover { background: #343c50; }
-#menu_tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; border-bottom: 1px solid #363d51; background: #0e1119; }
-.menu_tab { padding: 8px 11px; border: 1px solid transparent; background: transparent; color: #bdc4d7; text-transform: lowercase; }
-.menu_tab:hover, .menu_tab.active { border-color: #777f98; background: #262c3a; color: #fff; }
-#menu_content { overflow: auto; padding: 18px; }
-#menu_content h2 { margin-top: 0; text-transform: lowercase; }
-#menu_content h3 { margin: 18px 0 8px; color: #e7cf8d; text-transform: lowercase; }
-.menu_grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
-.menu_card { padding: 12px; border: 1px solid #3f475d; background: #171c28; }
-.menu_card.selected { border-color: #d1b96f; }
-.menu_card h3 { margin: 0 0 6px !important; color: #fff !important; }
-.menu_card p { margin: 4px 0; color: #c4cada; font-size: 13px; }
-.menu_card footer { display: flex; gap: 7px; margin-top: 10px; }
-.stat_table { width: 100%; border-collapse: collapse; }
-.stat_table td { padding: 7px 8px; border-bottom: 1px solid #30374a; }
-.stat_table td:last-child { text-align: right; color: #f0d58d; }
-.setting_row { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 10px 0; border-bottom: 1px solid #30374a; }
-.setting_row input[type="range"] { width: 220px; }
-.empty_state { padding: 24px; border: 1px dashed #4c5368; color: #9fa7bb; text-align: center; }
-.menu_header button:focus, .dialogue_box button:focus, .menu_button:focus, .menu_tab:focus, #menu_content input:focus { outline: 3px solid #f2d68c; outline-offset: 2px; }
+#menu_window {
+  width: min(860px, calc(100% - 26px));
+  height: min(540px, calc(100% - 26px));
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  overflow: hidden;
+}
+
+.menu_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px 18px;
+  border-bottom: 2px solid #f4dda066;
+  background: linear-gradient(180deg, #4b68a4, #2b437e);
+}
+
+.menu_header h1 {
+  margin: 2px 0 0;
+  color: #fff8d8;
+  font-size: 22px;
+  letter-spacing: .02em;
+  text-transform: capitalize;
+  text-shadow: 0 2px 0 #13204a;
+}
+
+.menu_header button,
+.dialogue_box button,
+.menu_button {
+  padding: 8px 13px;
+  border: 2px solid #fff0b4;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #637db5, #314b85);
+  color: #fff8d8;
+  box-shadow: 0 3px 0 #14234a;
+  font-weight: 800;
+}
+
+.menu_header button:hover,
+.dialogue_box button:hover,
+.menu_button:hover {
+  filter: brightness(1.14);
+  transform: translateY(-1px);
+}
+
+#menu_tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 9px 12px;
+  border-bottom: 2px solid #13244c;
+  background: #101d40;
+}
+
+.menu_tab {
+  padding: 8px 13px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #bcd0f4;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.menu_tab:hover,
+.menu_tab.active {
+  border-color: #fff0b4;
+  background: #36558f;
+  color: #fff8d8;
+  box-shadow: inset 0 0 0 2px #ffffff10;
+}
+
+#menu_content {
+  overflow: auto;
+  padding: 20px;
+  background:
+    linear-gradient(180deg, #ffffff09, transparent 25%),
+    #172957;
+  scrollbar-color: #efc967 #101d40;
+}
+
+#menu_content h2 {
+  margin: 0 0 14px;
+  color: #fff8d8;
+  font-size: 23px;
+  text-transform: capitalize;
+}
+
+#menu_content h3 {
+  margin: 20px 0 9px;
+  color: #f2d77c;
+  font-size: 15px;
+  text-transform: capitalize;
+}
+
+.menu_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 11px;
+}
+
+.menu_card {
+  padding: 13px;
+  border: 2px solid #8da8d8;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #314d86, #203767);
+  box-shadow: inset 0 0 0 2px #ffffff0b, 0 4px 0 #0e1b3d;
+}
+
+.menu_card.selected {
+  border-color: #fff0a5;
+  background: linear-gradient(180deg, #4a68a0, #29457c);
+}
+
+.menu_card h3 {
+  margin: 0 0 7px !important;
+  color: #fff8d8 !important;
+}
+
+.menu_card p {
+  margin: 4px 0;
+  color: #d7e3fb;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.menu_card footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.stat_table {
+  width: 100%;
+  overflow: hidden;
+  border: 2px solid #7994c8;
+  border-radius: 12px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #132650;
+}
+
+.stat_table td {
+  padding: 9px 11px;
+  border-bottom: 1px solid #7891be44;
+  color: #dce8ff;
+}
+.stat_table tr:last-child td { border-bottom: 0; }
+.stat_table td:last-child { text-align: right; color: #fff0a8; font-weight: 800; }
+
+.setting_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid #7891be44;
+}
+.setting_row input[type="range"] { width: min(260px, 45vw); accent-color: #f2ca62; }
+
+.empty_state {
+  padding: 28px;
+  border: 2px dashed #8aa2d1;
+  border-radius: 14px;
+  background: #132650;
+  color: #b9caeb;
+  text-align: center;
+}
+
+.menu_header button:focus-visible,
+.dialogue_box button:focus-visible,
+.menu_button:focus-visible,
+.menu_tab:focus-visible,
+#menu_content input:focus-visible {
+  outline: 3px solid #fff2ad;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  #menu_window { height: calc(100% - 18px); }
+  .menu_header { padding: 11px 13px; }
+  .menu_header h1 { font-size: 18px; }
+  #menu_tabs { flex-wrap: nowrap; overflow-x: auto; }
+  .menu_tab { flex: 0 0 auto; }
+  #menu_content { padding: 14px; }
+}
