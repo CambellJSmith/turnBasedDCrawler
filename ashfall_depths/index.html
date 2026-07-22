@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#11131a">
+  <title>Ashfall Depths</title>
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/menu.css">
+</head>
+<body>
+  <main id="game_shell">
+    <section id="game_frame" aria-label="Ashfall Depths game">
+      <canvas id="game_canvas" width="960" height="600"></canvas>
+
+      <div id="hud" aria-live="polite">
+        <div class="hud_group">
+          <div class="meter_row"><span>hp</span><div class="meter"><div id="health_fill" class="meter_fill health"></div></div><strong id="health_text"></strong></div>
+          <div class="meter_row"><span>mp</span><div class="meter"><div id="magic_fill" class="meter_fill magic"></div></div><strong id="magic_text"></strong></div>
+        </div>
+        <div class="hud_group hud_right">
+          <span id="phase_text" class="turn_phase">your turn</span>
+          <span id="turn_text">turn 0</span>
+          <span id="floor_text">floor 1</span>
+          <span id="gold_text">gold 0</span>
+          <span id="team_text">team 1</span>
+        </div>
+      </div>
+
+      <div id="message_log" aria-live="polite"></div>
+      <div id="interaction_prompt" hidden></div>
+
+      <div id="dialogue_overlay" class="overlay" hidden>
+        <section class="dialogue_box">
+          <h2 id="dialogue_name"></h2>
+          <p id="dialogue_text"></p>
+          <button id="dialogue_continue" type="button">continue</button>
+        </section>
+      </div>
+
+      <div id="menu_overlay" class="overlay" hidden>
+        <section id="menu_window" role="dialog" aria-modal="true" aria-label="game menu">
+          <header class="menu_header">
+            <h1>ashfall depths</h1>
+            <button id="menu_close" type="button" aria-label="close menu">close</button>
+          </header>
+          <nav id="menu_tabs" aria-label="menu sections"></nav>
+          <div id="menu_content"></div>
+        </section>
+      </div>
+    </section>
+
+    <aside id="controls_panel">
+      <h2>turn-based controls</h2>
+      <p><kbd>w a s d</kbd> / <kbd>arrows</kbd> move · 1 turn</p>
+      <p><kbd>space</kbd> weapon attack · 1 turn</p>
+      <p><kbd>1</kbd> fire bolt · <kbd>2</kbd> healing light · <kbd>3</kbd> frost nova · 1 turn</p>
+      <p><kbd>e</kbd> interact / collect / recruit</p>
+      <p><kbd>tab</kbd> / <kbd>escape</kbd> menu · free</p>
+      <h3>xbox controller</h3>
+      <p><kbd>left stick</kbd> / <kbd>d-pad</kbd> move · 1 turn</p>
+      <p><kbd>x</kbd> attack · <kbd>a</kbd> interact / confirm</p>
+      <p><kbd>lb</kbd> fire bolt · <kbd>rb</kbd> healing light · <kbd>y</kbd> frost nova</p>
+      <p><kbd>menu</kbd> open menu · <kbd>b</kbd> close / cancel</p>
+      <p id="gamepad_status" class="gamepad_status">controller ready · press any button</p>
+      <p class="control_note">order: player → companions → monsters</p>
+    </aside>
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
