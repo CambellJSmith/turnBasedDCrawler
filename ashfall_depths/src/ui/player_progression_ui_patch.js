@@ -1,0 +1,23 @@
+import { item_database } from "../data/items.js";
+import { MenuController } from "./menu_controller.js";
+
+MenuController.prototype.render_stats = function render_stats() {
+  const player = this.game.player;
+  const weapon = item_database[this.game.state.inventory.equipped_weapon_id];
+  const accessory = item_database[this.game.state.inventory.equipped_accessory_id];
+  const required_experience = this.game.player_progression_system?.get_experience_requirement() ?? 0;
+
+  return `<h2>stats</h2><table class="stat_table"><tbody>
+    <tr><td>name</td><td>${player.name}</td></tr>
+    <tr><td>level</td><td>${this.game.state.player_level}</td></tr>
+    <tr><td>experience</td><td>${this.game.state.player_experience} / ${required_experience}</td></tr>
+    <tr><td>health</td><td>${player.health} / ${player.maximum_health}</td></tr>
+    <tr><td>magic</td><td>${player.magic} / ${player.maximum_magic}</td></tr>
+    <tr><td>attack</td><td>${player.attack + (weapon?.attack_bonus ?? 0)}</td></tr>
+    <tr><td>defence</td><td>${player.defence + (accessory?.defence_bonus ?? 0)}</td></tr>
+    <tr><td>magic power</td><td>${player.magic_power + (weapon?.magic_bonus ?? 0)}</td></tr>
+    <tr><td>turns taken</td><td>${this.game.state.turn_count}</td></tr>
+    <tr><td>defeated monsters</td><td>${this.game.state.defeated_monsters}</td></tr>
+    <tr><td>current seed</td><td>${this.game.dungeon.seed}</td></tr>
+  </tbody></table>`;
+};
