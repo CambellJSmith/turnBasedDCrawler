@@ -1,4 +1,3 @@
-import { Game } from "../core/game.js";
 import { distance_between } from "../utils/math.js";
 import { ChestSystem } from "./chest_system.js";
 import { CompanionAiSystem } from "./companion_ai_system.js";
@@ -17,30 +16,6 @@ const actor_types = new Set(["player", "monster", "companion", "recruitable"]);
 const impassable_terrain_ids = new Set(["wall", "void"]);
 const lava_source = Object.freeze({ name: "lava", type: "environment" });
 
-Game.prototype.is_tile_blocked = function is_tile_blocked_by_actor(x, y, ignored_entity_id = "") {
-  return this.entities.some((entity) =>
-    entity.alive &&
-    actor_types.has(entity.type) &&
-    entity.entity_id !== ignored_entity_id &&
-    entity.grid_x === x &&
-    entity.grid_y === y
-  );
-};
-
-Game.prototype.can_actor_traverse = function can_actor_traverse(_actor, x, y) {
-  const tile = this.dungeon?.grid?.get_tile(x, y);
-  if (!tile || impassable_terrain_ids.has(tile.terrain_id)) {
-    return false;
-  }
-
-  const closed_secret_wall = this.dungeon_object_system?.get_object_at(
-    x,
-    y,
-    (object) => object.object_type === "secret_wall" && !object.open
-  );
-  return !closed_secret_wall;
-};
-
 MovementSystem.prototype.try_move = function try_move_across_shared_tiles(entity, direction, now) {
   if (!entity.alive || entity.moving) {
     return false;
@@ -48,11 +23,7 @@ MovementSystem.prototype.try_move = function try_move_across_shared_tiles(entity
 
   const target_x = entity.grid_x + direction.x;
   const target_y = entity.grid_y + direction.y;
-  const secret_wall = this.game.dungeon_object_system?.get_object_at(
-    target_x,
-    target_y,
-    (object) => object.object_type === "secret_wall" && !object.open
-  );
+  const secret_wall = get_closed_secret_wall(this.game, target_x, target_y);
 
   if (secret_wall) {
     if (entity.type === "player") {
@@ -61,18 +32,11 @@ MovementSystem.prototype.try_move = function try_move_across_shared_tiles(entity
     return false;
   }
 
-  if (!this.game.can_actor_traverse(entity, target_x, target_y)) {
+  if (!can_actor_traverse(this.game, target_x, target_y)) {
     return false;
   }
 
-  const blocking_actor = this.game.entities.find((candidate) =>
-    candidate.alive &&
-    actor_types.has(candidate.type) &&
-    candidate.entity_id !== entity.entity_id &&
-    candidate.grid_x === target_x &&
-    candidate.grid_y === target_y
-  );
-
+  const blocking_actor = get_blocking_actor(this.game, target_x, target_y, entity.entity_id);
   if (blocking_actor) {
     if (entity.type === "player" && blocking_actor.type === "companion" && !blocking_actor.moving) {
       return this.swap_entities(entity, blocking_actor, now);
@@ -112,8 +76,8 @@ EnemyAiSystem.prototype.try_retreat = function try_retreat_across_shared_tiles(m
       y: monster.grid_y + direction.y
     }))
     .filter((position) =>
-      this.game.can_actor_traverse(monster, position.x, position.y) &&
-      !this.game.is_tile_blocked(position.x, position.y, monster.entity_id)
+      can_actor_traverse(this.game, position.x, position.y) &&
+      !get_blocking_actor(this.game, position.x, position.y, monster.entity_id)
     )
     .sort((a, b) => {
       const distance_a = Math.hypot(a.x - target.grid_x, a.y - target.grid_y);
@@ -267,6 +231,32 @@ InteractionSystem.prototype.get_prompt = function get_current_tile_prompt() {
   return this.game.dungeon_object_system?.get_prompt(secret_wall) ?? "";
 };
 
+function can_actor_traverse(game, x, y) {
+  const tile = game.dungeon?.grid?.get_tile(x, y);
+  if (!tile || impassable_terrain_ids.has(tile.terrain_id)) {
+    return false;
+  }
+  return !get_closed_secret_wall(game, x, y);
+}
+
+function get_blocking_actor(game, x, y, ignored_entity_id = "") {
+  return game.entities.find((entity) =>
+    entity.alive &&
+    actor_types.has(entity.type) &&
+    entity.entity_id !== ignored_entity_id &&
+    entity.grid_x === x &&
+    entity.grid_y === y
+  ) ?? null;
+}
+
+function get_closed_secret_wall(game, x, y) {
+  return game.dungeon_object_system?.get_object_at(
+    x,
+    y,
+    (object) => object.object_type === "secret_wall" && !object.open
+  ) ?? null;
+}
+
 function apply_lava_damage(game, entity, now) {
   const resistance_rank = entity.type === "player"
     ? Math.max(0, Number(game.state?.player_upgrade_ranks?.lava_resistance) || 0)
@@ -310,10 +300,10 @@ function find_next_actor_step(game, actor, target) {
     for (const direction of cardinal_directions) {
       const next = { x: current.x + direction.x, y: current.y + direction.y };
       const key = position_key(next.x, next.y);
-      if (previous.has(key) || !game.can_actor_traverse(actor, next.x, next.y)) {
+      if (previous.has(key) || !can_actor_traverse(game, next.x, next.y)) {
         continue;
       }
-      if (key !== destination_key && game.is_tile_blocked(next.x, next.y, actor.entity_id)) {
+      if (key !== destination_key && get_blocking_actor(game, next.x, next.y, actor.entity_id)) {
         continue;
       }
       previous.set(key, current);
