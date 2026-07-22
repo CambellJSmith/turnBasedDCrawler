@@ -2,8 +2,8 @@ export const character_database = Object.freeze({
   hero: {
     id: "hero",
     name: "the wanderer",
-    maximum_health: 125,
-    maximum_magic: 70,
+    maximum_health: 85,
+    maximum_magic: 45,
     attack: 14,
     defence: 7,
     magic_power: 12,
