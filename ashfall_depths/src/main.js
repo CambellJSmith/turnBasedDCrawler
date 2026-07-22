@@ -1,17 +1,25 @@
 import "./world/lava_generation_patch.js";
 import "./systems/chest_gameplay_patch.js";
 import "./systems/chest_privacy_patch.js";
-import "./render/lava_render_patch.js";
+import "./systems/dungeon_object_gameplay_patch.js";
+import "./systems/exploration_gameplay_patch.js";
+import "./systems/environment_movement_patch.js";
+import "./ui/level_up_input_patch.js";
 import "./render/chest_render_patch.js";
+import "./render/dungeon_object_render_patch.js";
 import "./render/player_visibility_patch.js";
+import "./render/fog_render_patch.js";
 import "./ui/player_progression_ui_patch.js";
 import "./ui/room_ui_patch.js";
 import { Game } from "./core/game.js";
 import { install_player_progression } from "./systems/player_progression_system.js";
 import { GameOverController } from "./ui/game_over_controller.js";
+import { LevelUpController } from "./ui/level_up_controller.js";
 
 const canvas = document.querySelector("#game_canvas");
 const game = new Game(canvas);
+const level_up_controller = new LevelUpController(game);
+game.level_up_controller = level_up_controller;
 const saved_player_vitals = game.save_manager.load()?.player ?? null;
 install_player_progression(game, saved_player_vitals);
 
@@ -34,10 +42,10 @@ game.advance_floor = () => {
 };
 
 game.start = () => {
-  game.add_log("find the wall door whenever you want to descend");
-  game.add_log("treasure chests may appear throughout the dungeon");
-  game.add_log("lava is impassable, but every generated route remains fully connected");
-  game.add_log("rooms use distinct layouts, architecture, and floor materials");
+  game.add_log("explore the fog to discover rooms, hazards, treasure, and the wall door");
+  game.add_log("level ups offer three permanent upgrade choices");
+  game.add_log("traps and mechanisms can be triggered, disarmed, broken, opened, or activated");
+  game.add_log("monsters remain optional · fighting earns xp, gold, loot, and possible allies");
   requestAnimationFrame(game.loop);
 };
 
