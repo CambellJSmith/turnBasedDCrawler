@@ -40,7 +40,8 @@ export class MinimapController {
 
     for (const object of this.game.entities.filter((entity) => entity.alive && entity.type === "dungeon_object")) {
       const tile = grid.get_tile(object.grid_x, object.grid_y);
-      if (!tile?.explored || (object.object_type === "secret_wall" && !object.revealed)) {
+      const concealed = ["secret_wall", "spike_trap"].includes(object.object_type) && !object.revealed;
+      if (!tile?.explored || concealed) {
         continue;
       }
       const color = object.object_type === "healing_fountain" ? "#69c7dc" :
