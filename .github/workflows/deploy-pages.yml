@@ -26,6 +26,10 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v6
 
+      - name: test game logic
+        working-directory: ./ashfall_depths
+        run: npm test
+
       - name: configure github pages
         uses: actions/configure-pages@v5
 
