@@ -140,6 +140,7 @@ export class ChestSystem {
 
     monster.carried_chest_id = chest.entity_id;
     chest.carried_by_entity_id = monster.entity_id;
+    chest.alive = false;
     this.game.add_log(`${monster.name} picks up a treasure chest`);
     return true;
   }
