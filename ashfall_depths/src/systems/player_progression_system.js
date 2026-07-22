@@ -123,13 +123,15 @@ export class PlayerProgressionSystem {
     );
     this.game.state.pending_level_choices -= 1;
     this.game.add_log(`${definition.name} rank ${current_rank + 1} acquired`);
-    this.game.save_manager.save(this.game);
+    this.game.save_manager?.save(this.game);
 
     if (this.game.state.pending_level_choices > 0) {
       this.game.level_up_controller?.show_next_choice();
     } else {
       this.game.level_up_controller?.hide();
-      this.game.paused = false;
+      if (this.game.player.alive && !this.game.game_over_controller?.is_open()) {
+        this.game.paused = false;
+      }
     }
     return true;
   }
