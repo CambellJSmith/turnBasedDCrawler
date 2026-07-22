@@ -74,6 +74,7 @@ export class CombatSystem {
       this.game.state.gold += gold;
       this.game.state.defeated_monsters += 1;
       this.game.add_log(`${entity.name} falls · ${gold} gold`);
+      this.game.player_progression_system?.award_for_monster(entity);
 
       if (source?.type === "player" && this.game.dungeon.random.chance(0.01)) {
         this.revive_as_recruitable(entity);
