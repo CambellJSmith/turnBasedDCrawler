@@ -47,10 +47,10 @@ game.advance_floor = () => {
 };
 
 game.start = () => {
-  game.add_log("explore the fog to discover rooms, hazards, treasure, and the wall door");
-  game.add_log("stand on chests and dungeon objects, then interact with the tile beneath you");
-  game.add_log("only walls and other actors block movement · lava remains hazardous");
-  game.add_log("monsters remain optional · fighting earns xp, gold, loot, and possible allies");
+  game.add_log("expedition started · uncover the map and locate the descent door");
+  game.add_log("step onto treasure and dungeon objects, then interact with the tile beneath you");
+  game.add_log("use the command dock or keyboard shortcuts for attacks, spells, items, and the journal");
+  game.add_log("enemies are optional · combat earns experience, supplies, gold, and possible allies");
   requestAnimationFrame(game.loop);
 };
 
