@@ -1,3 +1,4 @@
+import "./render/player_visibility_patch.js";
 import { Game } from "./core/game.js";
 
 const canvas = document.querySelector("#game_canvas");
