@@ -6,6 +6,7 @@ import "./systems/dungeon_object_connectivity_patch.js";
 import "./systems/exploration_gameplay_patch.js";
 import "./systems/environment_movement_patch.js";
 import "./systems/shared_tile_gameplay_patch.js";
+import "./systems/solid_barrier_gameplay_patch.js";
 import "./systems/level_up_turn_patch.js";
 import "./ui/level_up_input_patch.js";
 import "./render/chest_render_patch.js";
@@ -49,7 +50,7 @@ game.advance_floor = () => {
 game.start = () => {
   game.add_log("expedition started · uncover the map and locate the descent door");
   game.add_log("step onto treasure and dungeon objects, then interact with the tile beneath you");
-  game.add_log("use the command dock or keyboard shortcuts for attacks, spells, items, and the journal");
+  game.add_log("locked doors and cracked walls are solid · interact with them from beside the barrier");
   game.add_log("enemies are optional · combat earns experience, supplies, gold, and possible allies");
   requestAnimationFrame(game.loop);
 };
