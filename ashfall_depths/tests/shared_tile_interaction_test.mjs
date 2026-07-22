@@ -64,6 +64,9 @@ assert.match(interaction.get_prompt(), /pull the lever/);
 assert.deepEqual(interaction.interact(), { consumes_turn: true, skip_non_player_turns: false });
 assert.equal(lever.used, true, "the object underneath the player should receive interaction");
 
+secret_wall.open = true;
+secret_wall.blocks_movement = false;
+secret_wall.blocks_vision = false;
 const adjacent_urn = create_dungeon_object(dungeon_object_definitions.breakable_urn, player.grid_x - 1, player.grid_y, 8);
 game.entities.push(adjacent_urn);
 assert.equal(interaction.get_prompt(), "", "ordinary adjacent objects should not show an interaction prompt");
