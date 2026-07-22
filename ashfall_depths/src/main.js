@@ -1,5 +1,6 @@
 import "./render/player_visibility_patch.js";
 import "./ui/player_progression_ui_patch.js";
+import "./ui/room_ui_patch.js";
 import { Game } from "./core/game.js";
 import { install_player_progression } from "./systems/player_progression_system.js";
 import { GameOverController } from "./ui/game_over_controller.js";
@@ -29,8 +30,8 @@ game.advance_floor = () => {
 
 game.start = () => {
   game.add_log("find the wall door whenever you want to descend");
+  game.add_log("rooms now use distinct layouts, architecture, and floor materials");
   game.add_log("monsters are optional · fighting earns xp, gold, loot, and possible allies");
-  game.add_log("level ups permanently increase maximum health and magic");
   game.add_log("each floor grows larger and more dangerous without a level cap");
   requestAnimationFrame(game.loop);
 };
