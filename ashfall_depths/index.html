@@ -7,8 +7,25 @@
   <title>Ashfall Depths</title>
   <link rel="stylesheet" href="./styles/main.css">
   <link rel="stylesheet" href="./styles/menu.css">
+  <style>
+    #startup_error {
+      margin: 16px;
+      padding: 16px;
+      border: 1px solid #b85d68;
+      background: #2a1117;
+      color: #ffe7ea;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 <body>
+  <noscript>
+    <div id="startup_error">Ashfall Depths requires JavaScript to run.</div>
+  </noscript>
+
+  <div id="startup_error" role="alert" hidden></div>
+
   <main id="game_shell">
     <section id="game_frame" aria-label="Ashfall Depths game">
       <canvas id="game_canvas" width="960" height="600"></canvas>
@@ -67,6 +84,14 @@
     </aside>
   </main>
 
-  <script type="module" src="./src/main.js"></script>
+  <script type="module">
+    const startup_error = document.querySelector("#startup_error");
+
+    import("./src/main.js").catch((error) => {
+      console.error(error);
+      startup_error.hidden = false;
+      startup_error.textContent = `Ashfall Depths could not start.\n\n${error?.stack ?? error}`;
+    });
+  </script>
 </body>
 </html>
