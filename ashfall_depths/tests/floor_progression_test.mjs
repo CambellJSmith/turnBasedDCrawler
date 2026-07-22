@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { calculate_monster_threat, get_floor_progression } from "../src/config/floor_progression.js";
 import { monster_database } from "../src/data/monsters.js";
+import { terrain_database } from "../src/data/terrain.js";
 import { generate_dungeon } from "../src/world/dungeon_generator.js";
 
 const floor_one = get_floor_progression(1);
@@ -11,6 +12,7 @@ assert.equal(floor_one.room_count, 2);
 assert.equal(get_floor_progression(3).monster_count, 1, "floors 1 through 3 should contain one enemy");
 assert.equal(get_floor_progression(4).monster_count, 2, "floor 4 should introduce the second enemy");
 assert.equal(get_floor_progression(7).monster_count, 3, "enemy count should rise once every three floors");
+assert.ok(get_floor_progression(7).maximum_room_size > floor_one.maximum_room_size, "larger room types should unlock as floors deepen");
 
 const floor_two = get_floor_progression(2);
 const floor_three = get_floor_progression(3);
@@ -41,9 +43,9 @@ for (let seed = 1; seed <= 100; seed += 1) {
   const dungeon = generate_dungeon(progression.map_width, progression.map_height, seed, progression);
   assert.equal(dungeon.grid.get_tile(dungeon.exit.x, dungeon.exit.y).terrain_id, "exit");
   assert.ok(directions.some(([dx, dy]) => {
-    const terrain = dungeon.grid.get_tile(dungeon.exit.x + dx, dungeon.exit.y + dy)?.terrain_id;
-    return terrain === "stone_floor" || terrain === "cracked_floor";
-  }), `door must touch a floor tile for seed ${seed}`);
+    const terrain_id = dungeon.grid.get_tile(dungeon.exit.x + dx, dungeon.exit.y + dy)?.terrain_id;
+    return Boolean(terrain_database[terrain_id]?.walkable);
+  }), `door must touch a walkable floor tile for seed ${seed}`);
   assert.ok(dungeon.grid.is_walkable(dungeon.exit.x, dungeon.exit.y));
   assert.ok(dungeon.grid.get_floor_positions().length > 1);
 }
