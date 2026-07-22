@@ -67,6 +67,8 @@ export class CanvasRenderer {
 
       if (drawable.kind === "wall") {
         this.draw_wall(screen.x, screen.y);
+      } else if (drawable.kind === "door") {
+        this.draw_door(screen.x, screen.y);
       } else if (drawable.entity.type === "ground_item") {
         this.draw_ground_item(drawable.entity, screen);
       } else {
@@ -81,17 +83,26 @@ export class CanvasRenderer {
 
     for (let y = 0; y < grid.height; y += 1) {
       for (let x = 0; x < grid.width; x += 1) {
-        if (grid.get_tile(x, y).terrain_id !== "wall") {
-          continue;
+        const terrain_id = grid.get_tile(x, y).terrain_id;
+        if (terrain_id === "wall") {
+          drawables.push({
+            kind: "wall",
+            display_x: x,
+            display_y: y,
+            depth: x + y,
+            sort_x: x,
+            sort_priority: 2
+          });
+        } else if (terrain_id === "exit") {
+          drawables.push({
+            kind: "door",
+            display_x: x,
+            display_y: y,
+            depth: x + y,
+            sort_x: x,
+            sort_priority: 0
+          });
         }
-        drawables.push({
-          kind: "wall",
-          display_x: x,
-          display_y: y,
-          depth: x + y,
-          sort_x: x,
-          sort_priority: 2
-        });
       }
     }
 
@@ -137,18 +148,9 @@ export class CanvasRenderer {
     context.closePath();
     context.fillStyle = color;
     context.fill();
-    context.strokeStyle = "#0c0e15";
-    context.lineWidth = 1;
+    context.strokeStyle = is_exit ? "#d9a85d" : "#0c0e15";
+    context.lineWidth = is_exit ? 2 : 1;
     context.stroke();
-    if (is_exit) {
-      context.strokeStyle = "#f0cf6a";
-      context.lineWidth = 2;
-      context.stroke();
-      context.beginPath();
-      context.arc(x, y, 7, 0, Math.PI * 2);
-      context.fillStyle = "#e8c35c";
-      context.fill();
-    }
   }
 
   draw_wall(x, y) {
@@ -187,6 +189,35 @@ export class CanvasRenderer {
     context.stroke();
   }
 
+  draw_door(x, y) {
+    const context = this.context;
+    const top_y = y - game_config.wall_height + 2;
+
+    context.beginPath();
+    context.moveTo(x - 17, y + 8);
+    context.lineTo(x + 17, y + 8);
+    context.lineTo(x + 17, top_y + 13);
+    context.quadraticCurveTo(x, top_y - 8, x - 17, top_y + 13);
+    context.closePath();
+    context.fillStyle = "#5a3a24";
+    context.fill();
+    context.strokeStyle = "#d5a760";
+    context.lineWidth = 3;
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(x, top_y - 5);
+    context.lineTo(x, y + 7);
+    context.strokeStyle = "#302016";
+    context.lineWidth = 2;
+    context.stroke();
+
+    context.beginPath();
+    context.arc(x + 9, y - 8, 2.5, 0, Math.PI * 2);
+    context.fillStyle = "#f0cf6a";
+    context.fill();
+  }
+
   draw_actor(entity, screen, now) {
     const context = this.context;
     const dimensions = this.get_actor_dimensions(entity);
@@ -210,9 +241,6 @@ export class CanvasRenderer {
     if (entity.type === "player") {
       return { radius: 15, height: 34, shadow_radius: 22, bar_width: 36 };
     }
-    if (entity.type === "companion" || entity.type === "recruitable") {
-      return { radius: 13, height: 31, shadow_radius: 20, bar_width: 34 };
-    }
     if (entity.archetype === "tank") {
       return { radius: 18, height: 31, shadow_radius: 25, bar_width: 42 };
     }
@@ -222,27 +250,31 @@ export class CanvasRenderer {
     if (entity.archetype === "glass_cannon") {
       return { radius: 11, height: 38, shadow_radius: 18, bar_width: 32 };
     }
+    if (entity.type === "companion" || entity.type === "recruitable") {
+      return { radius: 13, height: 31, shadow_radius: 20, bar_width: 34 };
+    }
     return { radius: 13, height: 31, shadow_radius: 20, bar_width: 34 };
   }
 
   draw_actor_body(entity, screen, dimensions, now) {
     const context = this.context;
+    const has_monster_shape = entity.type === "monster" || entity.recruited_monster || entity.recruitment_kind === "monster";
     context.beginPath();
 
-    if (entity.type === "monster" && entity.archetype === "tank") {
+    if (has_monster_shape && entity.archetype === "tank") {
       context.moveTo(screen.x, screen.y - dimensions.height);
       context.lineTo(screen.x + dimensions.radius, screen.y - 18);
       context.lineTo(screen.x + dimensions.radius, screen.y + 1);
       context.lineTo(screen.x, screen.y + 10);
       context.lineTo(screen.x - dimensions.radius, screen.y + 1);
       context.lineTo(screen.x - dimensions.radius, screen.y - 18);
-    } else if (entity.type === "monster" && entity.archetype === "bruiser") {
+    } else if (has_monster_shape && entity.archetype === "bruiser") {
       context.moveTo(screen.x, screen.y - dimensions.height);
       context.lineTo(screen.x + dimensions.radius + 2, screen.y - 10);
       context.lineTo(screen.x + dimensions.radius - 4, screen.y + 6);
       context.lineTo(screen.x - dimensions.radius + 4, screen.y + 6);
       context.lineTo(screen.x - dimensions.radius - 2, screen.y - 10);
-    } else if (entity.type === "monster" && entity.archetype === "glass_cannon") {
+    } else if (has_monster_shape && entity.archetype === "glass_cannon") {
       context.moveTo(screen.x, screen.y - dimensions.height);
       context.lineTo(screen.x + dimensions.radius, screen.y + 8);
       context.lineTo(screen.x, screen.y + 2);
@@ -258,7 +290,7 @@ export class CanvasRenderer {
     context.fillStyle = now < entity.flash_until ? "#ffffff" : entity.color;
     context.fill();
     context.strokeStyle = this.get_actor_stroke_color(entity);
-    context.lineWidth = entity.type === "monster" && entity.archetype === "tank" ? 3 : 2;
+    context.lineWidth = has_monster_shape && entity.archetype === "tank" ? 3 : 2;
     context.stroke();
   }
 
@@ -268,6 +300,9 @@ export class CanvasRenderer {
     }
     if (entity.type === "companion") {
       return "#ffe7a0";
+    }
+    if (entity.type === "recruitable") {
+      return "#f5d36d";
     }
     if (entity.type === "monster" && entity.archetype === "glass_cannon") {
       return "#f0c8ff";
