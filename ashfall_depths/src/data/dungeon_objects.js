@@ -58,13 +58,13 @@ export const dungeon_object_definitions = Object.freeze({
     name: "locked iron door",
     minimum_floor: 3,
     weight: 5,
-    blocks_movement: false,
+    blocks_movement: true,
     blocks_vision: true,
     placement: "corridor"
   }),
   secret_wall: Object.freeze({
     id: "secret_wall",
-    name: "secret wall",
+    name: "cracked wall",
     minimum_floor: 4,
     weight: 4,
     blocks_movement: true,
