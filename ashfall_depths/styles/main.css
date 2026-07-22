@@ -41,6 +41,15 @@ kbd { display: inline-block; padding: 2px 5px; border: 1px solid #626a80; border
 .dialogue_box p { min-height: 60px; line-height: 1.6; }
 .dialogue_box button { float: right; }
 
+.game_over_overlay { z-index: 50; background: #060307e8; }
+#game_over_window { width: min(520px, calc(100% - 42px)); padding: 28px; border: 1px solid #b85d68; background: #1d0d12; box-shadow: 0 22px 90px #000e; text-align: center; }
+#game_over_window h2 { margin: 0 0 12px; color: #ffb8c0; text-transform: lowercase; }
+#game_over_window p { margin: 0 0 22px; color: #e5cbd0; line-height: 1.6; }
+#wipe_restart_game { padding: 10px 15px; border: 1px solid #e07a87; background: #7f2230; color: #fff; font-weight: 700; }
+#wipe_restart_game:hover { background: #9e2b3b; }
+#wipe_restart_game:disabled { cursor: wait; opacity: .6; }
+#wipe_restart_game:focus { outline: 3px solid #ffd1d7; outline-offset: 3px; }
+
 @keyframes fade_in { from { opacity: 0; transform: translateY(4px); } }
 @media (max-width: 1100px) { #game_shell { grid-template-columns: 1fr; } #controls_panel { display: none; } }
 
