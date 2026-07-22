@@ -7,6 +7,8 @@ export class GameState {
     this.gold = 0;
     this.turn_count = 0;
     this.defeated_monsters = 0;
+    this.player_level = 1;
+    this.player_experience = 0;
     this.unlocked_character_ids = ["hero"];
     this.inventory = new InventoryState();
     this.party = new PartyState();
@@ -23,6 +25,8 @@ export class GameState {
       gold: this.gold,
       turn_count: this.turn_count,
       defeated_monsters: this.defeated_monsters,
+      player_level: this.player_level,
+      player_experience: this.player_experience,
       unlocked_character_ids: [...this.unlocked_character_ids],
       inventory: this.inventory.to_json(),
       party: this.party.to_json(),
@@ -38,6 +42,8 @@ export class GameState {
     this.gold = Number(data.gold) || 0;
     this.turn_count = Math.max(0, Number(data.turn_count) || 0);
     this.defeated_monsters = Number(data.defeated_monsters) || 0;
+    this.player_level = Math.max(1, Math.floor(Number(data.player_level) || 1));
+    this.player_experience = Math.max(0, Math.floor(Number(data.player_experience) || 0));
     this.unlocked_character_ids = Array.isArray(data.unlocked_character_ids) ? [...data.unlocked_character_ids] : ["hero"];
     this.inventory.load(data.inventory);
     this.party.load(data.party);
